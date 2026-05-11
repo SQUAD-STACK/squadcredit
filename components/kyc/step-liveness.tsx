@@ -137,7 +137,7 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
         verifyInFlightRef.current = false;
       }
     },
-    [poseIndex, updatePoseStatus, checkLivenessPoseWithGemini]
+    [poseIndex, updatePoseStatus]
   );
 
   const startPoseCapture = useCallback(() => {
@@ -270,8 +270,8 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
 
   const pulseActive = poseStatus === "capturing" && !allDone;
   const pulseTransition: Transition = pulseActive
-    ? { duration: 1.6, repeat: Infinity, ease: [0.42, 0, 0.58, 1] }
-    : { duration: 0.3, ease: [0.42, 0, 0.58, 1] };
+    ? { duration: 1.6, repeat: Infinity, repeatType: "loop", ease: [0.42, 0, 0.58, 1] as [number, number, number, number] }
+    : { duration: 0.3, ease: [0.42, 0, 0.58, 1] as [number, number, number, number] };
 
   const targetStroke = ringColor === neutralColor ? "rgba(255,255,255,0.35)" : ringColor;
   const targetFill = ringColor === neutralColor
