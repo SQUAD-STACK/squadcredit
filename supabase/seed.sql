@@ -1,5 +1,5 @@
 -- Demo seed: Sade Adebayo — fabric trader, Balogun Market
--- Run AFTER 001_initial_schema.sql
+-- Run AFTER 001_initial_schema.sql and 002_kyc_verification.sql
 
 insert into traders (
   id,
@@ -15,7 +15,8 @@ insert into traders (
   bank_code,
   bvn,
   trust_score,
-  credit_limit
+  credit_limit,
+  kyc_status
 ) values (
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   '08012345678',
@@ -30,7 +31,8 @@ insert into traders (
   '000013',
   '22222222222',
   642,
-  18000
+  18000,
+  'pending'
 );
 
 insert into savings (trader_id, balance, rule_percentage, rule_threshold, goal_label)
@@ -45,3 +47,6 @@ values (
 -- Note: transaction history is seeded via Squad simulate/payment endpoint
 -- to prove the full webhook → DB → score → UI loop.
 -- See CLAUDE.md "Demo data" section for the script.
+--
+-- Sade starts with kyc_status = 'pending' so the demo walks through
+-- the full KYC verification flow live.

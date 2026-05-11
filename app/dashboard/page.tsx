@@ -3,6 +3,8 @@ import type { Trader, Transaction, Loan, Savings } from "@/lib/supabase/types";
 import ScoreCard from "@/components/score-card";
 import TransactionFeed from "@/components/transaction-feed";
 import LoanBanner from "@/components/loan-banner";
+import Link from "next/link";
+import { ShieldAlert } from "lucide-react";
 
 const DEMO_TRADER_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 
@@ -42,17 +44,60 @@ export default async function DashboardPage() {
     );
   }
 
+  const isVerified = trader.kyc_status === "verified";
+
   return (
     <div className="pt-6 space-y-4">
+      {/* Verification banner for unverified traders */}
+      {!isVerified && (
+        <Link
+          href="/verify"
+          className="mx-4 flex items-center gap-3 rounded-xl p-4 transition-all"
+          style={{
+            backgroundColor: "var(--color-squad-orange-50, #fef1eb)",
+            border: "1px solid var(--color-squad-orange, #f25c19)",
+          }}
+        >
+          <ShieldAlert
+            size={24}
+            style={{ color: "var(--color-squad-orange, #f25c19)", flexShrink: 0 }}
+          />
+          <div className="flex-1">
+            <p
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-squad-orange-700, #a93808)" }}
+            >
+              Complete your verification
+            </p>
+            <p
+              className="text-xs mt-0.5"
+              style={{ color: "var(--color-squad-orange-600, #d44a0f)" }}
+            >
+              Verify your identity to unlock borrowing and savings
+            </p>
+          </div>
+          <span
+            className="text-xs font-medium px-2.5 py-1 rounded-full"
+            style={{
+              backgroundColor: "var(--color-squad-orange, #f25c19)",
+              color: "#fff",
+            }}
+          >
+            Start
+          </span>
+        </Link>
+      )}
+
       <ScoreCard
         firstName={trader.first_name}
         trustScore={trader.trust_score}
         creditLimit={Number(trader.credit_limit)}
         savingsBalance={savings ? Number(savings.balance) : 0}
         virtualAccountNumber={trader.virtual_account_number ?? ""}
+        verified={isVerified}
       />
 
-      {activeLoan && <LoanBanner loan={activeLoan} />}
+      {activeLoan && isVerified && <LoanBanner loan={activeLoan} />}
 
       <TransactionFeed transactions={transactions} />
     </div>
