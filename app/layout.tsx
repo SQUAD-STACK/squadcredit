@@ -1,17 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: "400",
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -47,9 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
-      >
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
         {children}
       </body>
     </html>

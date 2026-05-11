@@ -8,14 +8,14 @@ export function Input({
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
       {label && (
         <label
           htmlFor={props.id ?? props.name}
           style={{
             fontSize: "13px",
-            fontWeight: 500,
-            color: "var(--color-text-secondary, #5c5852)",
+            fontWeight: 600,
+            color: "#4b5563",
             letterSpacing: "0.01em",
           }}
         >
@@ -26,26 +26,28 @@ export function Input({
         id={props.id ?? props.name}
         style={{
           width: "100%",
-          padding: "14px 16px",
-          fontSize: "15px",
-          lineHeight: "22px",
-          borderRadius: "10px",
-          border: "none",
+          padding: "15px 18px",
+          fontSize: "16px",
+          fontWeight: 500,
+          fontFamily: "inherit",
+          borderRadius: "14px",
+          border: "1.5px solid transparent",
           outline: "none",
-          backgroundColor: "#f4f3ee",
-          color: "#1a1815",
-          boxShadow: "0 0 0 1.5px transparent",
-          transition: "box-shadow 0.15s ease, background-color 0.15s ease",
+          backgroundColor: "#f3f4f6",
+          color: "#111827",
+          transition: "all 0.15s ease",
           appearance: "none",
           WebkitAppearance: "none",
         }}
         onFocus={(e) => {
           e.currentTarget.style.backgroundColor = "#fff";
-          e.currentTarget.style.boxShadow = "0 0 0 2px #f25c19";
+          e.currentTarget.style.border = "1.5px solid #f25c19";
+          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(242,92,25,0.12)";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.backgroundColor = "#f4f3ee";
-          e.currentTarget.style.boxShadow = "0 0 0 1.5px transparent";
+          e.currentTarget.style.backgroundColor = "#f3f4f6";
+          e.currentTarget.style.border = "1.5px solid transparent";
+          e.currentTarget.style.boxShadow = "none";
         }}
         {...props}
       />
@@ -71,33 +73,32 @@ export function PrimaryButton({
       style={{
         width: "100%",
         padding: "16px 24px",
-        fontSize: "15px",
-        fontWeight: 500,
-        borderRadius: "10px",
+        fontSize: "16px",
+        fontWeight: 600,
+        fontFamily: "inherit",
+        letterSpacing: "-0.01em",
+        borderRadius: "14px",
         border: "none",
         cursor: isDisabled ? "not-allowed" : "pointer",
-        backgroundColor: isDisabled ? "#fde0d2" : "#f25c19",
-        color: isDisabled ? "#a93808" : "#fff",
-        transition: "background-color 0.15s ease, transform 0.1s ease",
-        letterSpacing: "0.01em",
+        backgroundColor: isDisabled ? "#e5e7eb" : "#f25c19",
+        color: isDisabled ? "#9ca3af" : "#fff",
+        transition: "all 0.15s ease",
       }}
       onMouseEnter={(e) => {
-        if (!isDisabled)
-          e.currentTarget.style.backgroundColor = "#d44a0f";
+        if (!isDisabled) e.currentTarget.style.backgroundColor = "#d94f14";
       }}
       onMouseLeave={(e) => {
-        if (!isDisabled)
-          e.currentTarget.style.backgroundColor = "#f25c19";
+        if (!isDisabled) e.currentTarget.style.backgroundColor = "#f25c19";
       }}
       onMouseDown={(e) => {
-        if (!isDisabled) e.currentTarget.style.transform = "scale(0.98)";
+        if (!isDisabled) e.currentTarget.style.transform = "scale(0.985)";
       }}
       onMouseUp={(e) => {
         if (!isDisabled) e.currentTarget.style.transform = "scale(1)";
       }}
       {...props}
     >
-      {pending ? "Please wait…" : children}
+      {pending ? "Please wait..." : children}
     </button>
   );
 }
@@ -108,11 +109,9 @@ export function FieldError({ message }: { message?: string }) {
     <p
       style={{
         fontSize: "13px",
-        color: "#a8211a",
-        marginTop: "6px",
-        display: "flex",
-        alignItems: "center",
-        gap: "4px",
+        fontWeight: 500,
+        color: "#dc2626",
+        marginTop: "4px",
       }}
     >
       {message}
@@ -138,13 +137,12 @@ export function SelectCard({
         alignItems: "center",
         gap: "12px",
         padding: "14px 16px",
-        borderRadius: "10px",
+        borderRadius: "14px",
         cursor: "pointer",
         transition: "all 0.15s ease",
-        backgroundColor: selected ? "#fef1eb" : "#fff",
-        boxShadow: selected
-          ? "0 0 0 1.5px #f25c19"
-          : "0 0 0 1px rgba(26,24,21,0.1)",
+        backgroundColor: selected ? "#fff4ef" : "#fff",
+        border: `1.5px solid ${selected ? "#f25c19" : "rgba(0,0,0,0.08)"}`,
+        boxShadow: selected ? "0 0 0 3px rgba(242,92,25,0.08)" : "none",
       }}
     >
       <input
@@ -160,21 +158,22 @@ export function SelectCard({
           width: "18px",
           height: "18px",
           borderRadius: "50%",
-          border: `2px solid ${selected ? "#f25c19" : "rgba(26,24,21,0.2)"}`,
+          border: `2px solid ${selected ? "#f25c19" : "rgba(0,0,0,0.2)"}`,
           flexShrink: 0,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           transition: "border-color 0.15s ease",
+          backgroundColor: selected ? "#f25c19" : "transparent",
         }}
       >
         {selected && (
           <span
             style={{
-              width: "8px",
-              height: "8px",
+              width: "6px",
+              height: "6px",
               borderRadius: "50%",
-              backgroundColor: "#f25c19",
+              backgroundColor: "#fff",
             }}
           />
         )}
@@ -182,8 +181,8 @@ export function SelectCard({
       <span
         style={{
           fontSize: "15px",
-          color: selected ? "#a93808" : "#1a1815",
-          fontWeight: selected ? 500 : 400,
+          fontWeight: 500,
+          color: selected ? "#c44112" : "#374151",
           transition: "color 0.15s ease",
         }}
       >
@@ -210,18 +209,18 @@ export function PillCard({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "12px 8px",
-        borderRadius: "10px",
+        padding: "13px 10px",
+        borderRadius: "14px",
         cursor: "pointer",
         textAlign: "center",
         transition: "all 0.15s ease",
-        backgroundColor: selected ? "#fef1eb" : "#fff",
-        boxShadow: selected
-          ? "0 0 0 1.5px #f25c19"
-          : "0 0 0 1px rgba(26,24,21,0.1)",
+        backgroundColor: selected ? "#f25c19" : "#fff",
+        border: `1.5px solid ${selected ? "#f25c19" : "rgba(0,0,0,0.08)"}`,
+        boxShadow: selected ? "0 4px 12px rgba(242,92,25,0.3)" : "none",
         fontSize: "14px",
-        color: selected ? "#a93808" : "#1a1815",
-        fontWeight: selected ? 500 : 400,
+        fontWeight: 600,
+        color: selected ? "#fff" : "#374151",
+        lineHeight: "18px",
       }}
     >
       <input

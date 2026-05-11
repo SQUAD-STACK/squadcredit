@@ -17,11 +17,11 @@ async function squadFetch<T>(
     },
   });
 
-  const json = await res.json();
+  const json = await res.json().catch(() => null);
 
   if (!res.ok) {
     throw new Error(
-      json?.message ?? `Squad API error ${res.status} on ${path}`
+      `Squad API ${res.status} on ${path}: ${JSON.stringify(json)}`
     );
   }
 

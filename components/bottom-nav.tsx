@@ -16,32 +16,65 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 h-16 flex items-center justify-around px-2"
       style={{
-        backgroundColor: "var(--color-surface-raised, #fff)",
-        borderTop: "1px solid var(--border-subtle, rgba(26,24,21,0.08))",
-        boxShadow: "0 -1px 0 rgba(26,24,21,0.04)",
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: "68px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-around",
+        padding: "0 8px",
+        backgroundColor: "#fff",
+        borderTop: "1px solid rgba(0,0,0,0.06)",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.05)",
+        zIndex: 30,
       }}
     >
       {navItems.map(({ href, label, Icon }) => {
-        const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+        const active =
+          pathname === href ||
+          (href !== "/dashboard" && pathname.startsWith(href));
         return (
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-1 flex-1 py-2 rounded-lg transition-colors"
             style={{
-              color: active
-                ? "var(--color-squad-orange, #f25c19)"
-                : "var(--color-text-tertiary, #8b867e)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "4px",
+              flex: 1,
+              padding: "8px 0",
+              textDecoration: "none",
+              color: active ? "#f25c19" : "#9ca3af",
+              borderRadius: "12px",
+              transition: "color 0.15s ease",
+              position: "relative",
             }}
           >
-            <Icon size={20} strokeWidth={active ? 2 : 1.5} />
+            {active && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "2px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "20px",
+                  height: "3px",
+                  backgroundColor: "#f25c19",
+                  borderRadius: "0 0 3px 3px",
+                }}
+              />
+            )}
+            <Icon size={20} strokeWidth={active ? 2.5 : 1.75} />
             <span
               style={{
-                fontSize: "11px",
-                fontWeight: active ? 500 : 400,
-                letterSpacing: "0.01em",
+                fontSize: "10px",
+                fontWeight: active ? 700 : 500,
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
               }}
             >
               {label}
