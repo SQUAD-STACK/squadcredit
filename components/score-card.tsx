@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { animate } from "framer-motion";
 import { formatNaira } from "@/lib/format";
+import { Lock } from "lucide-react";
 
 interface ScoreCardProps {
   firstName: string;
@@ -10,6 +11,7 @@ interface ScoreCardProps {
   creditLimit: number;
   savingsBalance: number;
   virtualAccountNumber: string;
+  verified?: boolean;
 }
 
 function scoreColor(score: number): string {
@@ -35,6 +37,7 @@ export default function ScoreCard({
   creditLimit,
   savingsBalance,
   virtualAccountNumber,
+  verified = true,
 }: ScoreCardProps) {
   return (
     <div
@@ -81,7 +84,30 @@ export default function ScoreCard({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <StatTile label="You can borrow" value={formatNaira(creditLimit)} accent />
+        {verified ? (
+          <StatTile label="You can borrow" value={formatNaira(creditLimit)} accent />
+        ) : (
+          <div
+            className="rounded-md p-4 flex flex-col items-center justify-center gap-1"
+            style={{
+              backgroundColor: "var(--color-surface-muted, #edebe3)",
+              opacity: 0.7,
+            }}
+          >
+            <Lock size={16} style={{ color: "var(--color-text-tertiary)" }} />
+            <p
+              style={{
+                fontSize: 10,
+                color: "var(--color-text-tertiary)",
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+                fontWeight: 500,
+              }}
+            >
+              Verify to borrow
+            </p>
+          </div>
+        )}
         <StatTile label="Saved" value={formatNaira(savingsBalance)} />
       </div>
 

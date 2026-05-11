@@ -26,15 +26,17 @@ export interface Database {
           bvn: string | null;
           trust_score: number;
           credit_limit: number;
+          kyc_status: "pending" | "in_progress" | "verified" | "rejected";
           created_at: string;
         };
         Insert: Omit<
           Database["public"]["Tables"]["traders"]["Row"],
-          "id" | "created_at" | "trust_score" | "credit_limit"
+          "id" | "created_at" | "trust_score" | "credit_limit" | "kyc_status"
         > & {
           id?: string;
           trust_score?: number;
           credit_limit?: number;
+          kyc_status?: "pending" | "in_progress" | "verified" | "rejected";
         };
         Update: Partial<Database["public"]["Tables"]["traders"]["Insert"]>;
       };
@@ -97,6 +99,42 @@ export interface Database {
         > & { id?: string; balance?: number };
         Update: Partial<Database["public"]["Tables"]["savings"]["Insert"]>;
       };
+      kyc_verifications: {
+        Row: {
+          id: string;
+          trader_id: string;
+          status: "pending" | "in_progress" | "verified" | "rejected";
+          current_step: number;
+          personal_completed_at: string | null;
+          document_type: string | null;
+          document_extracted: Json | null;
+          document_confidence: number | null;
+          document_completed_at: string | null;
+          liveness_score: number | null;
+          liveness_challenges: Json | null;
+          liveness_completed_at: string | null;
+          workspace_objects: Json | null;
+          workspace_assessment: string | null;
+          workspace_score: number | null;
+          workspace_completed_at: string | null;
+          merchandise_objects: Json | null;
+          merchandise_assessment: string | null;
+          merchandise_match: boolean | null;
+          merchandise_score: number | null;
+          merchandise_completed_at: string | null;
+          completed_at: string | null;
+          created_at: string;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["kyc_verifications"]["Row"],
+          "id" | "created_at" | "current_step" | "status"
+        > & {
+          id?: string;
+          current_step?: number;
+          status?: "pending" | "in_progress" | "verified" | "rejected";
+        };
+        Update: Partial<Database["public"]["Tables"]["kyc_verifications"]["Insert"]>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -109,3 +147,4 @@ export type Trader = Database["public"]["Tables"]["traders"]["Row"];
 export type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 export type Loan = Database["public"]["Tables"]["loans"]["Row"];
 export type Savings = Database["public"]["Tables"]["savings"]["Row"];
+export type KycVerification = Database["public"]["Tables"]["kyc_verifications"]["Row"];
