@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { animate } from "framer-motion";
 import { formatNaira } from "@/lib/format";
 import { Lock } from "lucide-react";
 
@@ -53,15 +55,8 @@ export default function ScoreCard({
       </p>
 
       <div className="flex items-end gap-3 mb-1">
-        <span
-          className="text-[56px] leading-none"
-          style={{
-            fontFamily: "var(--font-display, 'Instrument Serif', serif)",
-            color: scoreColor(trustScore),
-          }}
-        >
-          {trustScore}
-        </span>
+        <AnimatedScore score={trustScore} />
+
         <span
           className="text-sm font-medium pb-2"
           style={{
@@ -182,5 +177,39 @@ function StatTile({
         {value}
       </p>
     </div>
+  );
+}
+
+function AnimatedScore({ score }: { score: number }) {
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const [displayed, setDisplayed] = useState(score);
+
+  useEffect(() => {
+    const el = spanRef.current;
+    if (!el) return;
+    const controls = animate(displayed, score, {
+      duration: 0.4,
+      ease: "easeOut",
+      onUpdate: (v) => {
+        el.textContent = Math.round(v).toString();
+      },
+      onComplete: () => setDisplayed(score),
+    });
+    return controls.stop;
+    // displayed intentionally excluded — we want to animate from where we are
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [score]);
+
+  return (
+    <span
+      ref={spanRef}
+      className="text-[56px] leading-none"
+      style={{
+        fontFamily: "var(--font-display, 'Instrument Serif', serif)",
+        color: scoreColor(score),
+      }}
+    >
+      {score}
+    </span>
   );
 }
