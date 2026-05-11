@@ -23,13 +23,21 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "SquadCredit",
-  description:
-    "Cash-flow credit and savings for Nigerian market traders. Built on Squad.",
+  description: "Cash-flow credit for market traders",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SquadCredit",
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: "#F25C19",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
