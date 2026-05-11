@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Syne, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-sans",
+const syne = Syne({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-display",
+const outfit = Outfit({
+  variable: "--font-sans",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
@@ -47,9 +48,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
-      >
+      <body className={`${syne.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
         {children}
       </body>
     </html>

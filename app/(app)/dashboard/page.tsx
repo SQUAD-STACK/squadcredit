@@ -45,7 +45,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="pt-6 space-y-4">
+    <div style={{ paddingTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
       <RealtimeRefresher traderId={trader.id} />
       <ScoreCard
         firstName={trader.first_name}

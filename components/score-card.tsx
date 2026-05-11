@@ -12,14 +12,7 @@ interface ScoreCardProps {
   virtualAccountNumber: string;
 }
 
-function scoreColor(score: number): string {
-  if (score >= 800) return "var(--color-squad-red, #9a1f2a)";
-  if (score >= 650) return "var(--color-success, #0f7a4d)";
-  if (score >= 500) return "var(--color-squad-orange, #f25c19)";
-  return "var(--color-text-secondary, #5c5852)";
-}
-
-function scoreTierLabel(score: number): string {
+function tierLabel(score: number): string {
   if (score >= 800) return "Anchor";
   if (score >= 700) return "Scale";
   if (score >= 650) return "Growth";
@@ -36,120 +29,210 @@ export default function ScoreCard({
   savingsBalance,
   virtualAccountNumber,
 }: ScoreCardProps) {
+  const pct = Math.min((trustScore / 1000) * 100, 100);
+
   return (
     <div
-      className="rounded-xl p-8"
       style={{
-        background: "linear-gradient(135deg, var(--color-squad-orange-50, #fef1eb) 0%, var(--color-surface-raised, #fff) 100%)",
-        boxShadow: "var(--shadow-elevated, 0 4px 12px rgba(26,24,21,0.08))",
+        borderRadius: "20px",
+        overflow: "hidden",
+        boxShadow: "0 8px 32px rgba(26,24,21,0.14), 0 2px 4px rgba(26,24,21,0.04)",
       }}
     >
-      <p
-        className="text-sm font-medium mb-1"
-        style={{ color: "var(--color-text-secondary, #5c5852)" }}
-      >
-        {firstName}&apos;s trust score
-      </p>
-
-      <div className="flex items-end gap-3 mb-1">
-        <AnimatedScore score={trustScore} />
-
-        <span
-          className="text-sm font-medium pb-2"
+      {/* Dark hero */}
+      <div style={{ backgroundColor: "#1c1917", padding: "24px 24px 20px" }}>
+        <p
           style={{
-            color: "var(--color-text-tertiary, #8b867e)",
-            letterSpacing: "0.02em",
+            fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
+            fontSize: "11px",
+            fontWeight: 600,
+            letterSpacing: "0.08em",
             textTransform: "uppercase",
-            fontSize: "12px",
+            color: "rgba(255,255,255,0.4)",
+            marginBottom: "8px",
           }}
         >
-          {scoreTierLabel(trustScore)}
-        </span>
-      </div>
+          {firstName}&apos;s trust score
+        </p>
 
-      <div
-        className="w-full h-1.5 rounded-full mb-6"
-        style={{ backgroundColor: "var(--color-surface-muted, #edebe3)" }}
-      >
         <div
-          className="h-1.5 rounded-full transition-all duration-500"
           style={{
-            width: `${Math.min((trustScore / 1000) * 100, 100)}%`,
-            backgroundColor: scoreColor(trustScore),
+            display: "flex",
+            alignItems: "flex-end",
+            gap: "14px",
+            marginBottom: "18px",
           }}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <StatTile label="You can borrow" value={formatNaira(creditLimit)} accent />
-        <StatTile label="Saved" value={formatNaira(savingsBalance)} />
-      </div>
-
-      {virtualAccountNumber && (
-        <div
-          className="mt-4 pt-4"
-          style={{ borderTop: "1px solid var(--border-subtle, rgba(26,24,21,0.08))" }}
         >
-          <p className="text-xs mb-0.5" style={{ color: "var(--color-text-tertiary, #8b867e)" }}>
-            Your payment number
-          </p>
-          <p
-            className="text-sm tracking-wide tnum"
+          <AnimatedScore score={trustScore} />
+          <div style={{ paddingBottom: "10px" }}>
+            <p
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "11px",
+                color: "rgba(255,255,255,0.35)",
+                letterSpacing: "0.04em",
+                marginBottom: "3px",
+              }}
+            >
+              out of 1000
+            </p>
+            <span
+              style={{
+                display: "inline-block",
+                fontFamily: "var(--font-display)",
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "#f25c19",
+                backgroundColor: "rgba(242,92,25,0.15)",
+                borderRadius: "4px",
+                padding: "2px 8px",
+              }}
+            >
+              {tierLabel(trustScore)}
+            </span>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div
+          style={{
+            height: "3px",
+            backgroundColor: "rgba(255,255,255,0.1)",
+            borderRadius: "2px",
+            overflow: "hidden",
+          }}
+        >
+          <div
             style={{
-              fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
-              color: "var(--color-text-primary, #1a1815)",
+              height: "100%",
+              width: `${pct}%`,
+              backgroundColor: "#f25c19",
+              borderRadius: "2px",
+              transition: "width 0.6s ease",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Stat tiles */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+        <div style={{ backgroundColor: "#f25c19", padding: "18px 20px" }}>
+          <p
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "10px",
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.65)",
+              marginBottom: "5px",
             }}
           >
-            {virtualAccountNumber}
-            <span className="ml-2 text-xs" style={{ color: "var(--color-text-tertiary, #8b867e)" }}>
-              GTBank
-            </span>
+            You can borrow
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "22px",
+              fontWeight: 800,
+              color: "#fff",
+              letterSpacing: "-0.03em",
+              fontFeatureSettings: '"tnum"',
+            }}
+          >
+            {formatNaira(creditLimit)}
           </p>
         </div>
-      )}
-    </div>
-  );
-}
 
-function StatTile({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
-  return (
-    <div
-      className="rounded-md p-4"
-      style={{
-        backgroundColor: accent
-          ? "var(--color-squad-orange, #f25c19)"
-          : "var(--color-surface-raised, #fff)",
-      }}
-    >
-      <p
-        className="text-xs mb-1"
-        style={{
-          color: accent ? "rgba(255,255,255,0.75)" : "var(--color-text-tertiary, #8b867e)",
-          letterSpacing: "0.02em",
-          textTransform: "uppercase",
-          fontSize: "11px",
-          fontWeight: 500,
-        }}
-      >
-        {label}
-      </p>
-      <p
-        className="text-lg font-medium tnum"
-        style={{
-          color: accent ? "#fff" : "var(--color-text-primary, #1a1815)",
-          fontFeatureSettings: '"tnum"',
-        }}
-      >
-        {value}
-      </p>
+        <div
+          style={{
+            backgroundColor: "#fff",
+            padding: "18px 20px",
+            borderLeft: "1px solid rgba(26,24,21,0.06)",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "10px",
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "#8b867e",
+              marginBottom: "5px",
+            }}
+          >
+            Saved
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "22px",
+              fontWeight: 800,
+              color: "#1a1815",
+              letterSpacing: "-0.03em",
+              fontFeatureSettings: '"tnum"',
+            }}
+          >
+            {formatNaira(savingsBalance)}
+          </p>
+        </div>
+      </div>
+
+      {/* Payment number footer */}
+      {virtualAccountNumber && (
+        <div
+          style={{
+            backgroundColor: "#fff",
+            padding: "14px 20px",
+            borderTop: "1px solid rgba(26,24,21,0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <p
+              style={{
+                fontSize: "11px",
+                color: "#8b867e",
+                marginBottom: "2px",
+                letterSpacing: "0.02em",
+              }}
+            >
+              Payment number
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
+                fontSize: "15px",
+                letterSpacing: "0.04em",
+                color: "#1a1815",
+                fontFeatureSettings: '"tnum"',
+              }}
+            >
+              {virtualAccountNumber}
+            </p>
+          </div>
+          <span
+            style={{
+              fontSize: "12px",
+              fontWeight: 600,
+              color: "#5c5852",
+              backgroundColor: "#f4f3ee",
+              borderRadius: "6px",
+              padding: "4px 10px",
+              fontFamily: "var(--font-display)",
+              letterSpacing: "0.02em",
+              flexShrink: 0,
+            }}
+          >
+            GTBank
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -162,7 +245,7 @@ function AnimatedScore({ score }: { score: number }) {
     const el = spanRef.current;
     if (!el) return;
     const controls = animate(displayed, score, {
-      duration: 0.4,
+      duration: 0.5,
       ease: "easeOut",
       onUpdate: (v) => {
         el.textContent = Math.round(v).toString();
@@ -170,17 +253,19 @@ function AnimatedScore({ score }: { score: number }) {
       onComplete: () => setDisplayed(score),
     });
     return controls.stop;
-    // displayed intentionally excluded — we want to animate from where we are
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [score]);
 
   return (
     <span
       ref={spanRef}
-      className="text-[56px] leading-none"
       style={{
-        fontFamily: "var(--font-display, 'Instrument Serif', serif)",
-        color: scoreColor(score),
+        fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
+        fontSize: "72px",
+        fontWeight: 800,
+        lineHeight: 1,
+        color: "#fff",
+        letterSpacing: "-0.04em",
       }}
     >
       {score}

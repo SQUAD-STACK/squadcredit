@@ -2,8 +2,8 @@
 
 @theme {
   /* Fonts */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Instrument Serif", serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-display: "Syne", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Squad brand */
@@ -69,12 +69,11 @@ html {
 body {
   background-color: #fafaf7;
   color: #1a1815;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-sans, "Outfit", system-ui, sans-serif);
   font-size: 15px;
   line-height: 22px;
 }
 
-/* Tabular figures for naira amounts */
 .tnum {
   font-feature-settings: "tnum";
 }
