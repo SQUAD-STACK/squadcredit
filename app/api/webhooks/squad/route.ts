@@ -34,16 +34,19 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createServiceClient();
 
-  // Find the trader who owns this virtual account
-  const { data: _traderRes } = await supabase
+  // customer_identifier is "trader_<uuid>" — extract the uuid
+  const traderId = payload.customer_identifier.replace(/^trader_/, "");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: _traderRes } = await (supabase as any)
     .from("traders")
     .select("*")
-    .eq("virtual_account_number", payload.virtual_account_number)
-    .single();
+    .eq("id", traderId)
+    .maybeSingle();
 
   const trader = _traderRes as Trader | null;
 
   if (!trader) {
+    console.warn("[webhook] no trader found for customer_identifier:", payload.customer_identifier);
     return ok(payload.transaction_reference);
   }
 
@@ -80,23 +83,23 @@ export async function POST(req: NextRequest) {
       .eq("id", activeLoan.id);
   }
 
-  // ── Write transaction (UNIQUE constraint deduplicates retries) ──
-  const { error: txError } = await db.from("transactions").insert({
-    trader_id: trader.id,
-    transaction_reference: payload.transaction_reference,
-    sender_name: payload.sender_name,
-    sender_account: payload.masked_sender_account_number ?? null,
-    amount: principalAmount,
-    settled_amount: settledAmount,
-    transaction_date: payload.transaction_date,
-    raw_payload: payload,
-  });
+  // ── Write transaction — upsert is idempotent on transaction_reference ──
+  const { error: txError } = await db.from("transactions").upsert(
+    {
+      trader_id: trader.id,
+      transaction_reference: payload.transaction_reference,
+      sender_name: payload.sender_name,
+      sender_account: payload.masked_sender_account_number ?? null,
+      amount: principalAmount,
+      settled_amount: settledAmount,
+      transaction_date: payload.transaction_date,
+      raw_payload: payload,
+    },
+    { onConflict: "transaction_reference", ignoreDuplicates: true }
+  );
 
   if (txError) {
-    if (txError.code === "23505") {
-      return ok(payload.transaction_reference);
-    }
-    console.error("[webhook] transaction insert failed:", txError);
+    console.error("[webhook] transaction upsert failed:", txError);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
   }
 

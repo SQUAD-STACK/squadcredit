@@ -18,17 +18,17 @@ export default function AppHeader() {
           right: 0,
           zIndex: 50,
           height: "60px",
-          backgroundColor: "rgba(250,250,247,0.92)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          borderBottom: "1px solid rgba(26,24,21,0.07)",
+          backgroundColor: "rgba(249,250,251,0.9)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 20px",
         }}
       >
-        {/* Logo mark + wordmark */}
+        {/* Logo */}
         <Link
           href="/dashboard"
           style={{
@@ -40,9 +40,9 @@ export default function AppHeader() {
         >
           <div
             style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "8px",
+              width: "34px",
+              height: "34px",
+              borderRadius: "10px",
               backgroundColor: "#f25c19",
               display: "flex",
               alignItems: "center",
@@ -52,11 +52,10 @@ export default function AppHeader() {
           >
             <span
               style={{
-                fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
-                fontSize: "12px",
-                fontWeight: 800,
+                fontSize: "13px",
+                fontWeight: 700,
                 color: "#fff",
-                letterSpacing: "-0.03em",
+                letterSpacing: "-0.02em",
               }}
             >
               SC
@@ -64,10 +63,9 @@ export default function AppHeader() {
           </div>
           <span
             style={{
-              fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
               fontSize: "16px",
               fontWeight: 700,
-              color: "#1a1815",
+              color: "#111827",
               letterSpacing: "-0.025em",
             }}
           >
@@ -84,46 +82,33 @@ export default function AppHeader() {
             flexDirection: "column",
             justifyContent: "center",
             gap: "5px",
-            padding: "10px",
+            padding: "8px",
             background: "none",
             border: "none",
             cursor: "pointer",
-            borderRadius: "8px",
+            borderRadius: "10px",
           }}
         >
-          <span
-            style={{
-              display: "block",
-              width: "20px",
-              height: "2px",
-              backgroundColor: "#1a1815",
-              borderRadius: "2px",
-              transition: "transform 0.2s ease, opacity 0.2s ease",
-              transform: menuOpen ? "translateY(7px) rotate(45deg)" : "none",
-            }}
-          />
-          <span
-            style={{
-              display: "block",
-              width: "20px",
-              height: "2px",
-              backgroundColor: "#1a1815",
-              borderRadius: "2px",
-              opacity: menuOpen ? 0 : 1,
-              transition: "opacity 0.2s ease",
-            }}
-          />
-          <span
-            style={{
-              display: "block",
-              width: "20px",
-              height: "2px",
-              backgroundColor: "#1a1815",
-              borderRadius: "2px",
-              transition: "transform 0.2s ease",
-              transform: menuOpen ? "translateY(-7px) rotate(-45deg)" : "none",
-            }}
-          />
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              style={{
+                display: "block",
+                width: "20px",
+                height: "2px",
+                backgroundColor: "#111827",
+                borderRadius: "2px",
+                transition: "transform 0.2s ease, opacity 0.2s ease",
+                transform:
+                  menuOpen && i === 0
+                    ? "translateY(7px) rotate(45deg)"
+                    : menuOpen && i === 2
+                    ? "translateY(-7px) rotate(-45deg)"
+                    : "none",
+                opacity: menuOpen && i === 1 ? 0 : 1,
+              }}
+            />
+          ))}
         </button>
       </header>
 
@@ -135,12 +120,12 @@ export default function AppHeader() {
             position: "fixed",
             inset: 0,
             zIndex: 40,
-            backgroundColor: "rgba(26,24,21,0.25)",
+            backgroundColor: "rgba(0,0,0,0.2)",
           }}
         />
       )}
 
-      {/* Dropdown menu */}
+      {/* Slide-down menu */}
       <div
         style={{
           position: "fixed",
@@ -149,35 +134,37 @@ export default function AppHeader() {
           right: 0,
           zIndex: 45,
           backgroundColor: "#fff",
-          borderBottom: "1px solid rgba(26,24,21,0.08)",
-          boxShadow: "0 8px 24px rgba(26,24,21,0.1)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
           overflow: "hidden",
-          maxHeight: menuOpen ? "320px" : "0",
+          maxHeight: menuOpen ? "280px" : "0",
           transition: "max-height 0.25s ease",
         }}
       >
-        {(["Home:/dashboard", "Borrow:/borrow", "Savings:/savings", "Profile:/profile"] as const).map((item) => {
-          const [label, href] = item.split(":");
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: "block",
-                padding: "16px 20px",
-                fontSize: "15px",
-                fontWeight: 500,
-                fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
-                color: "#1a1815",
-                textDecoration: "none",
-                borderBottom: "1px solid rgba(26,24,21,0.05)",
-              }}
-            >
-              {label}
-            </Link>
-          );
-        })}
+        {[
+          { label: "Home", href: "/dashboard" },
+          { label: "Borrow", href: "/borrow" },
+          { label: "Savings", href: "/savings" },
+          { label: "Profile", href: "/profile" },
+        ].map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setMenuOpen(false)}
+            style={{
+              display: "block",
+              padding: "16px 20px",
+              fontSize: "15px",
+              fontWeight: 600,
+              color: "#111827",
+              textDecoration: "none",
+              borderBottom: "1px solid rgba(0,0,0,0.05)",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            {item.label}
+          </Link>
+        ))}
         <button
           onClick={() => {
             setMenuOpen(false);
@@ -189,13 +176,14 @@ export default function AppHeader() {
             width: "100%",
             padding: "16px 20px",
             fontSize: "15px",
-            fontWeight: 500,
-            fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
-            color: "#a8211a",
+            fontWeight: 600,
+            fontFamily: "inherit",
+            color: "#dc2626",
             background: "none",
             border: "none",
             textAlign: "left",
             cursor: "pointer",
+            letterSpacing: "-0.01em",
             opacity: pending ? 0.6 : 1,
           }}
         >

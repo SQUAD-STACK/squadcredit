@@ -2,63 +2,63 @@
 
 @theme {
   /* Fonts */
-  --font-sans: "Outfit", system-ui, sans-serif;
-  --font-display: "Syne", system-ui, sans-serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "DM Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Squad brand */
   --color-squad-orange: #f25c19;
-  --color-squad-orange-50: #fef1eb;
+  --color-squad-orange-50: #fff4ef;
   --color-squad-orange-100: #fde0d2;
   --color-squad-orange-500: #f25c19;
   --color-squad-orange-600: #d44a0f;
   --color-squad-orange-700: #a93808;
-  --color-squad-red: #9a1f2a;
-  --color-squad-red-700: #7a1620;
 
   /* Surfaces */
-  --color-surface-base: #fafaf7;
+  --color-surface-base: #f9fafb;
   --color-surface-raised: #ffffff;
-  --color-surface-sunken: #f4f3ee;
-  --color-surface-muted: #edebe3;
+  --color-surface-sunken: #f3f4f6;
+  --color-surface-muted: #e5e7eb;
 
   /* Text */
-  --color-text-primary: #1a1815;
-  --color-text-secondary: #5c5852;
-  --color-text-tertiary: #8b867e;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
 
   /* Semantic */
-  --color-success: #0f7a4d;
-  --color-success-bg: #e8f4ed;
-  --color-warning: #b8730a;
-  --color-warning-bg: #fbf1dc;
-  --color-danger: #a8211a;
-  --color-danger-bg: #fae8e6;
+  --color-success: #059669;
+  --color-success-bg: #ecfdf5;
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fef2f2;
 
   /* Border radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-card: 0 1px 2px rgba(26, 24, 21, 0.04),
-    0 1px 3px rgba(26, 24, 21, 0.04);
-  --shadow-elevated: 0 4px 12px rgba(26, 24, 21, 0.08),
-    0 2px 4px rgba(26, 24, 21, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 :root {
-  --border-subtle: rgba(26, 24, 21, 0.08);
-  --border-default: rgba(26, 24, 21, 0.14);
-  --border-strong: rgba(26, 24, 21, 0.24);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.18);
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -67,11 +67,11 @@ html {
 }
 
 body {
-  background-color: #fafaf7;
-  color: #1a1815;
-  font-family: var(--font-sans, "Outfit", system-ui, sans-serif);
+  background-color: #f9fafb;
+  color: #111827;
+  font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
   font-size: 15px;
-  line-height: 22px;
+  line-height: 1.5;
 }
 
 .tnum {

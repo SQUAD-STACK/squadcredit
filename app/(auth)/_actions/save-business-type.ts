@@ -28,12 +28,6 @@ export async function saveBusinessType(
   const traderId = crypto.randomUUID();
   const customer_identifier = `trader_${traderId}`;
 
-  // Generate a sandbox fallback NUBAN: Squad caps VA creation per merchant in sandbox.
-  // In production this would always succeed; for the demo we fall back gracefully.
-  function fakeSandboxNuban(): string {
-    return "55" + String(Math.floor(Math.random() * 1e8)).padStart(8, "0");
-  }
-
   let virtualAccountNumber: string;
   try {
     const vaRes = await createVirtualAccount({
@@ -48,18 +42,14 @@ export async function saveBusinessType(
       address: market,
       beneficiary_account: "4920299492",
     });
+    if (!vaRes.data?.virtual_account_number) {
+      console.error("[onboard] Squad returned no NUBAN — full response:", JSON.stringify(vaRes));
+      return { error: "We couldn't create your payment account. Please try again." };
+    }
     virtualAccountNumber = vaRes.data.virtual_account_number;
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "";
-    const isSandboxLimit = msg.toLowerCase().includes("limit");
-    if (isSandboxLimit) {
-      // Sandbox VA cap hit — assign a placeholder NUBAN so onboarding completes.
-      virtualAccountNumber = fakeSandboxNuban();
-      console.warn("[onboard] Sandbox VA limit reached — using placeholder NUBAN:", virtualAccountNumber);
-    } else {
-      console.error("[onboard] Squad VA creation failed:", err);
-      return { error: "We couldn't set up your account. Try again." };
-    }
+    console.error("[onboard] Squad VA creation failed:", err);
+    return { error: "We couldn't create your payment account. Please try again." };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

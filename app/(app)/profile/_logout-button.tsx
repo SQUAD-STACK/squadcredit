@@ -14,19 +14,21 @@ export default function LogoutButton() {
         width: "100%",
         padding: "16px 24px",
         backgroundColor: "#fff",
-        color: "#a8211a",
-        borderRadius: "10px",
+        color: "#dc2626",
+        borderRadius: "14px",
         fontSize: "15px",
-        fontWeight: 500,
+        fontWeight: 600,
+        fontFamily: "inherit",
+        letterSpacing: "-0.01em",
         textAlign: "center",
         border: "none",
-        boxShadow: "0 0 0 1px rgba(26,24,21,0.08)",
+        boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.06)",
         cursor: pending ? "not-allowed" : "pointer",
         opacity: pending ? 0.6 : 1,
         transition: "opacity 0.15s ease",
       }}
     >
-      {pending ? "Signing out…" : "Sign out"}
+      {pending ? "Signing out..." : "Sign out"}
     </button>
   );
 }

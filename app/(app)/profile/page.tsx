@@ -27,27 +27,34 @@ export default async function ProfilePage() {
     { label: "Bank", value: "GTBank" },
     { label: "Credit limit", value: formatNaira(Number(trader.credit_limit)) },
     { label: "Tier", value: tierLabel(trader.trust_score) },
-    { label: "Member since", value: new Date(trader.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" }) },
+    {
+      label: "Member since",
+      value: new Date(trader.created_at).toLocaleDateString("en-NG", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    },
   ];
 
   return (
     <div style={{ paddingTop: "16px", paddingBottom: "24px" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "28px" }}>
+
+      {/* Avatar + name */}
+      <div style={{ marginBottom: "24px" }}>
         <div
           style={{
-            width: "56px",
-            height: "56px",
-            borderRadius: "14px",
-            backgroundColor: "#fef1eb",
+            width: "60px",
+            height: "60px",
+            borderRadius: "18px",
+            backgroundColor: "#fff4ef",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginBottom: "14px",
-            fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
-            fontSize: "20px",
-            fontWeight: 800,
-            color: "#a93808",
+            fontSize: "22px",
+            fontWeight: 700,
+            color: "#f25c19",
             letterSpacing: "-0.02em",
           }}
         >
@@ -55,29 +62,44 @@ export default async function ProfilePage() {
         </div>
         <h1
           style={{
-            fontFamily: "var(--font-display, 'Syne', system-ui, sans-serif)",
             fontSize: "24px",
-            fontWeight: 800,
-            color: "#1a1815",
+            fontWeight: 700,
+            color: "#111827",
             letterSpacing: "-0.03em",
             marginBottom: "4px",
           }}
         >
           {trader.first_name} {trader.last_name}
         </h1>
-        <p style={{ fontSize: "13px", color: "#8b867e" }}>
-          Score {trader.trust_score} · {tierLabel(trader.trust_score)}
-        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "13px", color: "#9ca3af" }}>
+            Score {trader.trust_score}
+          </span>
+          <span style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "#d1d5db", display: "inline-block" }} />
+          <span
+            style={{
+              fontSize: "12px",
+              fontWeight: 600,
+              color: "#f25c19",
+              backgroundColor: "#fff4ef",
+              padding: "2px 10px",
+              borderRadius: "99px",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {tierLabel(trader.trust_score)}
+          </span>
+        </div>
       </div>
 
       {/* Detail rows */}
       <div
         style={{
           backgroundColor: "#fff",
-          borderRadius: "16px",
+          borderRadius: "20px",
           overflow: "hidden",
-          boxShadow: "0 0 0 1px rgba(26,24,21,0.08)",
-          marginBottom: "16px",
+          boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)",
+          marginBottom: "14px",
         }}
       >
         {rows.map((row, i) => (
@@ -87,22 +109,22 @@ export default async function ProfilePage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              padding: "14px 20px",
-              borderBottom: i < rows.length - 1 ? "1px solid rgba(26,24,21,0.06)" : "none",
+              padding: "15px 20px",
+              borderBottom: i < rows.length - 1 ? "1px solid rgba(0,0,0,0.05)" : "none",
               gap: "16px",
             }}
           >
-            <span style={{ fontSize: "14px", color: "#5c5852", flexShrink: 0 }}>
+            <span style={{ fontSize: "14px", color: "#9ca3af", fontWeight: 500, flexShrink: 0 }}>
               {row.label}
             </span>
             <span
               style={{
                 fontFamily: row.mono
                   ? "var(--font-mono, 'JetBrains Mono', monospace)"
-                  : "var(--font-display, 'Syne', system-ui, sans-serif)",
+                  : "inherit",
                 fontSize: "14px",
                 fontWeight: 700,
-                color: "#1a1815",
+                color: "#111827",
                 textAlign: "right",
                 letterSpacing: row.mono ? "0.04em" : "-0.01em",
                 wordBreak: "break-all",
@@ -114,7 +136,6 @@ export default async function ProfilePage() {
         ))}
       </div>
 
-      {/* Logout */}
       <LogoutButton />
     </div>
   );

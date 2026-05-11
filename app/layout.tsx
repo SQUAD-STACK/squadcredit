@@ -1,18 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, Outfit, JetBrains_Mono } from "next/font/google";
+import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
-
-const outfit = Outfit({
+const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -48,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${syne.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
         {children}
       </body>
     </html>

@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         style={{
           maxWidth: "440px",
           margin: "0 auto",
-          padding: "60px 20px 80px",
+          padding: "60px 20px 84px",
         }}
       >
         {children}
