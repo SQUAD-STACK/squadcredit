@@ -4,9 +4,6 @@ import type { Trader, KycVerification } from "@/lib/supabase/types";
 import VerifyFlow from "./verify-flow";
 
 const DEMO_TRADER_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
-const FORCE_VERIFY =
-  process.env.NEXT_PUBLIC_FORCE_VERIFY === "true" ||
-  process.env.NODE_ENV !== "production";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +28,7 @@ export default async function VerifyPage() {
   }
 
   // Already verified — go to dashboard
-  if (trader.kyc_status === "verified" && !FORCE_VERIFY) {
+  if (trader.kyc_status === "verified") {
     redirect("/dashboard");
   }
 
@@ -43,7 +40,7 @@ export default async function VerifyPage() {
     .maybeSingle();
 
   const kyc = kycData as KycVerification | null;
-  const currentStep = FORCE_VERIFY ? 1 : kyc?.current_step ?? 1;
+  const currentStep = kyc?.current_step ?? 1;
 
   return (
     <VerifyFlow
