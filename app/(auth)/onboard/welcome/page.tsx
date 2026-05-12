@@ -72,7 +72,7 @@ export default async function WelcomePage() {
       )}
 
       <Link
-        href="/dashboard"
+        href="/verify"
         style={{
           display: "block",
           width: "100%",
@@ -87,7 +87,7 @@ export default async function WelcomePage() {
           transition: "background-color 0.15s ease",
         }}
       >
-        Go to my account
+        Continue verification
       </Link>
     </div>
   );

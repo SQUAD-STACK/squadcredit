@@ -5,6 +5,7 @@ import ScoreCard from "@/components/score-card";
 import TransactionFeed from "@/components/transaction-feed";
 import LoanBanner from "@/components/loan-banner";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ShieldAlert } from "lucide-react";
 import RealtimeRefresher from "@/components/realtime-refresher";
 
@@ -48,48 +49,13 @@ export default async function DashboardPage() {
 
   const isVerified = trader.kyc_status === "verified";
 
+  if (!isVerified) {
+    redirect("/verify");
+  }
+
   return (
     <div style={{ paddingTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
       <RealtimeRefresher traderId={trader.id} />
-      {!isVerified && (
-        <Link
-          href="/verify"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            borderRadius: "16px",
-            padding: "14px 16px",
-            backgroundColor: "#fff4ef",
-            border: "1.5px solid #f25c19",
-            textDecoration: "none",
-          }}
-        >
-          <ShieldAlert size={22} color="#f25c19" style={{ flexShrink: 0 }} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: "14px", fontWeight: 700, color: "#c44112", letterSpacing: "-0.01em" }}>
-              Complete your verification
-            </p>
-            <p style={{ fontSize: "12px", color: "#d96830", marginTop: "2px" }}>
-              Verify your identity to unlock borrowing and savings
-            </p>
-          </div>
-          <span
-            style={{
-              flexShrink: 0,
-              fontSize: "12px",
-              fontWeight: 600,
-              padding: "6px 14px",
-              borderRadius: "99px",
-              backgroundColor: "#f25c19",
-              color: "#fff",
-              fontFamily: "inherit",
-            }}
-          >
-            Start
-          </span>
-        </Link>
-      )}
       <ScoreCard
         firstName={trader.first_name}
         trustScore={trader.trust_score}

@@ -4,10 +4,26 @@ const BASE_URL = process.env.SQUAD_API_BASE_URL!;
 const SECRET_KEY = process.env.SQUAD_SECRET_KEY!;
 const MERCHANT_ID = "SBK9CS1TJ5";
 
+function assertSquadConfig() {
+  if (!BASE_URL) {
+    throw new Error("SQUAD_API_BASE_URL is missing.");
+  }
+
+  if (!SECRET_KEY) {
+    throw new Error("SQUAD_SECRET_KEY is missing.");
+  }
+
+  if (!SECRET_KEY.startsWith("sandbox_sk_")) {
+    throw new Error("SQUAD_SECRET_KEY must be a Squad sandbox secret key that starts with sandbox_sk_.");
+  }
+}
+
 async function squadFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
+  assertSquadConfig();
+
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
     headers: {
