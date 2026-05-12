@@ -1,5 +1,3 @@
-import KycProgressBar from "@/components/kyc/progress-bar";
-
 export default function VerifyLayout({
   children,
 }: {
@@ -7,44 +5,103 @@ export default function VerifyLayout({
 }) {
   return (
     <div
-      className="min-h-screen flex justify-center items-center w-full py-8 px-4 sm:py-12"
-      style={{ backgroundColor: "var(--color-surface-muted, #edebe3)" }}
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        width: "100%",
+        padding: "24px 16px 40px",
+        backgroundColor: "#F9FAFB",
+      }}
     >
       <div
-        className="w-full max-w-4xl min-h-[80vh] max-h-[95vh] flex flex-col relative rounded-3xl overflow-hidden"
         style={{
-          backgroundColor: "var(--color-surface-base, #fafaf7)",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)",
+          width: "100%",
+          maxWidth: "480px",
+          minHeight: "calc(100vh - 64px)",
+          display: "flex",
+          flexDirection: "column",
+          position: "relative",
+          borderRadius: "24px",
+          overflow: "hidden",
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)",
         }}
       >
         {/* Header */}
         <header
-          className="px-4 pt-6 pb-2"
-          style={{ backgroundColor: "var(--color-surface-base)" }}
+          style={{
+            padding: "20px 20px 12px",
+            borderBottom: "1px solid rgba(0,0,0,0.05)",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
         >
-          <p
-            className="text-lg font-medium mb-1"
+          {/* SC mark */}
+          <div
             style={{
-              fontFamily: "var(--font-display)",
-              color: "var(--color-squad-orange, #f25c19)",
+              width: "32px",
+              height: "32px",
+              borderRadius: "9px",
+              backgroundColor: "#f25c19",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
             }}
           >
-            SquadCredit
-          </p>
-          <p
-            className="text-xs"
-            style={{
-              color: "var(--color-text-tertiary, #8b867e)",
-              letterSpacing: "0.02em",
-              textTransform: "uppercase",
-            }}
-          >
-            Identity verification
-          </p>
+            <span
+              style={{
+                color: "#fff",
+                fontSize: "13px",
+                fontWeight: 700,
+                fontFamily: "inherit",
+                letterSpacing: "-0.03em",
+              }}
+            >
+              SC
+            </span>
+          </div>
+          <div>
+            <p
+              style={{
+                fontSize: "15px",
+                fontWeight: 700,
+                color: "#111827",
+                letterSpacing: "-0.02em",
+                lineHeight: 1,
+                fontFamily: "inherit",
+              }}
+            >
+              SquadCredit
+            </p>
+            <p
+              style={{
+                fontSize: "11px",
+                color: "#9ca3af",
+                fontWeight: 500,
+                marginTop: "2px",
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+              }}
+            >
+              Identity verification
+            </p>
+          </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 pb-8 overflow-y-auto overflow-x-hidden relative">
+        <main
+          style={{
+            flex: 1,
+            paddingBottom: "32px",
+            overflowY: "auto",
+            overflowX: "hidden",
+            position: "relative",
+          }}
+        >
           {children}
         </main>
       </div>

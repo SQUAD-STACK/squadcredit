@@ -35,13 +35,7 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
     setError(null);
 
     try {
-      const result = await submitDocumentScan({
-        traderId,
-        documentType,
-        base64Image: base64,
-        mimeType,
-      });
-
+      const result = await submitDocumentScan({ traderId, documentType, base64Image: base64, mimeType });
       if (result.success && result.extracted) {
         setExtracted(result.extracted as unknown as Record<string, string>);
       }
@@ -55,8 +49,6 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !documentType) return;
-
-    // Do NOT set processing here, we set it after the canvas loads
     setError(null);
 
     try {
@@ -64,7 +56,6 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
       reader.onloadend = () => {
         const img = new Image();
         img.onload = async () => {
-          // Compress and standardize image using canvas
           const canvas = document.createElement("canvas");
           const MAX_WIDTH = 1280;
           const MAX_HEIGHT = 1280;
@@ -72,25 +63,15 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
           let height = img.height;
 
           if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
           } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
+            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
           }
 
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext("2d");
-          if (!ctx) {
-            setError("Failed to process image");
-            setProcessing(false);
-            return;
-          }
+          if (!ctx) { setError("Failed to process image"); setProcessing(false); return; }
 
           ctx.drawImage(img, 0, 0, width, height);
           const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
@@ -102,13 +83,7 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
           setError(null);
 
           try {
-            const result = await submitDocumentScan({
-              traderId,
-              documentType,
-              base64Image: base64,
-              mimeType,
-            });
-
+            const result = await submitDocumentScan({ traderId, documentType, base64Image: base64, mimeType });
             if (result.success && result.extracted) {
               setExtracted(result.extracted as unknown as Record<string, string>);
             }
@@ -118,9 +93,7 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
             setProcessing(false);
           }
         };
-        img.onerror = () => {
-          setError("Invalid image file");
-        };
+        img.onerror = () => { setError("Invalid image file"); };
         img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
@@ -136,47 +109,55 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="px-4"
+        style={{ padding: "20px" }}
       >
-        <div className="mb-6">
-          <h2
-            className="text-xl font-medium mb-1"
-            style={{ color: "var(--color-text-primary)" }}
-          >
+        <div style={{ marginBottom: "24px" }}>
+          <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em", marginBottom: "4px", fontFamily: "inherit" }}>
             Scan your ID
           </h2>
-          <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+          <p style={{ fontSize: "14px", color: "#6b7280" }}>
             Choose the document you would like to verify with
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {DOCUMENT_OPTIONS.map(({ type, label, icon }) => (
             <button
               key={type}
               onClick={() => setDocumentType(type)}
-              className="w-full flex items-center gap-4 rounded-xl p-4 transition-all"
               style={{
-                backgroundColor: "var(--color-surface-raised, #fff)",
-                border: "1px solid var(--border-default, rgba(26,24,21,0.14))",
-                boxShadow: "var(--shadow-card)",
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                gap: "16px",
+                borderRadius: "16px",
+                padding: "16px",
+                backgroundColor: "#fff",
+                border: "1.5px solid rgba(0,0,0,0.08)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+                fontFamily: "inherit",
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f25c19"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(242,92,25,0.08)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)"; }}
             >
               <div
-                className="flex items-center justify-center rounded-lg"
                 style={{
                   width: 44,
                   height: 44,
-                  backgroundColor: "var(--color-squad-orange-50, #fef1eb)",
-                  color: "var(--color-squad-orange, #f25c19)",
+                  borderRadius: "12px",
+                  backgroundColor: "#fff4ef",
+                  color: "#f25c19",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
                 {icon}
               </div>
-              <span
-                className="text-sm font-medium"
-                style={{ color: "var(--color-text-primary)" }}
-              >
+              <span style={{ fontSize: "15px", fontWeight: 600, color: "#111827", fontFamily: "inherit" }}>
                 {label}
               </span>
             </button>
@@ -186,20 +167,11 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
     );
   }
 
-  // Phase 2: Camera or upload
+  // Phase 2: Camera
   if (showCamera) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="px-4"
-      >
-        <CameraView
-          onCapture={handleCapture}
-          facing="environment"
-          showToggle
-          guideText="Position the document within the frame"
-        />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: "20px" }}>
+        <CameraView onCapture={handleCapture} facing="environment" showToggle guideText="Position the document within the frame" />
       </motion.div>
     );
   }
@@ -207,148 +179,88 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
   // Phase 3: Processing
   if (processing) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="px-4"
-      >
-        <div className="mb-6">
-          <h2 className="text-xl font-medium mb-1" style={{ color: "var(--color-text-primary)" }}>
-            Scanning Document
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em", marginBottom: "4px", fontFamily: "inherit" }}>
+            Scanning document
           </h2>
-          <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-            Please wait while we extract the details...
-          </p>
+          <p style={{ fontSize: "14px", color: "#6b7280" }}>Please wait while we extract the details...</p>
         </div>
 
         {previewImage ? (
-          <div className="relative w-full rounded-xl overflow-hidden bg-black aspect-[3/4] sm:aspect-video flex items-center justify-center">
+          <div style={{ position: "relative", width: "100%", borderRadius: "16px", overflow: "hidden", backgroundColor: "#000", aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={previewImage} 
-              alt="Document preview" 
-              className="max-w-full max-h-full object-contain opacity-75"
-            />
-            {/* Scanner Animation */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <img src={previewImage} alt="Document preview" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", opacity: 0.75 }} />
+            <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
               <motion.div
                 initial={{ top: "0%" }}
                 animate={{ top: "100%" }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  ease: "linear",
-                }}
-                className="absolute left-0 right-0 h-32 pointer-events-none"
-                style={{
-                  background: "linear-gradient(to bottom, transparent, rgba(242, 92, 25, 0.2) 90%, rgba(242, 92, 25, 0.8) 100%)",
-                  borderBottom: "2px solid #f25c19",
-                  transform: "translateY(-100%)",
-                }}
+                transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
+                style={{ position: "absolute", left: 0, right: 0, height: 120, background: "linear-gradient(to bottom, transparent, rgba(242,92,25,0.2) 90%, rgba(242,92,25,0.8) 100%)", borderBottom: "2px solid #f25c19", transform: "translateY(-100%)" }}
               />
             </div>
-            
-            {/* Loader overlay */}
-            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-               <div className="bg-black/40 backdrop-blur-md p-4 rounded-full" style={{ color: "var(--color-squad-orange, #f25c19)" }}>
-                  <Loader2 size={32} className="animate-spin" />
-               </div>
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10, pointerEvents: "none" }}>
+              <div style={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", padding: "14px", borderRadius: "50%", color: "#f25c19" }}>
+                <Loader2 size={28} className="animate-spin" />
+              </div>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Loader2 size={48} className="animate-spin mb-4" style={{ color: "var(--color-squad-orange, #f25c19)" }} />
-            <p className="text-sm font-medium" style={{ color: "var(--color-text-secondary)" }}>Reading your document...</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "64px 0" }}>
+            <Loader2 size={44} className="animate-spin" style={{ color: "#f25c19", marginBottom: "16px" }} />
+            <p style={{ fontSize: "14px", fontWeight: 500, color: "#6b7280" }}>Reading your document...</p>
           </div>
         )}
       </motion.div>
     );
   }
 
-  // Phase 4: Show extracted results
+  // Phase 4: Extracted results
   if (extracted) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="px-4"
-      >
-        <div className="mb-6">
-          <div
-            className="flex items-center gap-2 mb-1"
-          >
-            <Check
-              size={20}
-              style={{ color: "var(--color-success, #0f7a4d)" }}
-            />
-            <h2
-              className="text-xl font-medium"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ padding: "20px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+            <Check size={20} color="#059669" />
+            <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em", fontFamily: "inherit" }}>
               Document scanned
             </h2>
           </div>
-          <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-            Please confirm the information below
-          </p>
+          <p style={{ fontSize: "14px", color: "#6b7280" }}>Please confirm the information below</p>
         </div>
 
         <div
-          className="rounded-xl p-5 space-y-3 mb-6"
           style={{
-            backgroundColor: "var(--color-surface-raised, #fff)",
-            border: "1px solid var(--border-default)",
-            boxShadow: "var(--shadow-card)",
+            borderRadius: "16px",
+            padding: "18px",
+            marginBottom: "24px",
+            backgroundColor: "#fff",
+            boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "14px",
           }}
         >
-          {Object.entries(extracted)
-            .map(([key, value]) => (
-              <div key={key}>
-                <p
-                  className="text-xs mb-0.5"
-                  style={{
-                    color: "var(--color-text-tertiary)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.04em",
-                    fontSize: 10,
-                  }}
-                >
-                  {key.replace(/_/g, " ")}
-                </p>
-                <p
-                  className="text-sm font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
-                  {String(value) || "—"}
-                </p>
-              </div>
-            ))}
+          {Object.entries(extracted).map(([key, value]) => (
+            <div key={key}>
+              <p style={{ fontSize: "10px", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px", fontWeight: 500 }}>
+                {key.replace(/_/g, " ")}
+              </p>
+              <p style={{ fontSize: "14px", fontWeight: 600, color: "#111827" }}>{String(value) || "—"}</p>
+            </div>
+          ))}
         </div>
 
-        <div className="flex gap-3">
+        <div style={{ display: "flex", gap: "12px" }}>
           <button
-            onClick={() => {
-              setExtracted(null);
-              setPreviewImage(null);
-              setShowCamera(false);
-            }}
-            className="flex-1 py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2"
-            style={{
-              backgroundColor: "var(--color-surface-muted, #edebe3)",
-              color: "var(--color-text-secondary)",
-            }}
+            onClick={() => { setExtracted(null); setPreviewImage(null); setShowCamera(false); }}
+            style={{ flex: 1, padding: "14px", borderRadius: "14px", fontSize: "14px", fontWeight: 500, fontFamily: "inherit", border: "none", backgroundColor: "#f3f4f6", color: "#374151", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
           >
-            <RotateCcw size={16} />
-            Retake
+            <RotateCcw size={15} /> Retake
           </button>
           <button
             onClick={onComplete}
-            className="flex-1 py-3 rounded-xl text-sm font-semibold"
-            style={{
-              backgroundColor: "var(--color-squad-orange, #f25c19)",
-              color: "#fff",
-            }}
+            style={{ flex: 1, padding: "14px", borderRadius: "14px", fontSize: "14px", fontWeight: 600, fontFamily: "inherit", border: "none", backgroundColor: "#f25c19", color: "#fff", cursor: "pointer" }}
           >
             Confirm
           </button>
@@ -359,63 +271,37 @@ export default function StepDocument({ traderId, onComplete }: StepDocumentProps
 
   // Phase 2b: Choose capture method
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="px-4"
-    >
-      <div className="mb-6">
-        <h2
-          className="text-xl font-medium mb-1"
-          style={{ color: "var(--color-text-primary)" }}
-        >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ padding: "20px" }}>
+      <div style={{ marginBottom: "24px" }}>
+        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em", marginBottom: "4px", fontFamily: "inherit" }}>
           Capture your {DOCUMENT_OPTIONS.find((d) => d.type === documentType)?.label}
         </h2>
-        <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-          Take a clear photo or upload an existing image
-        </p>
+        <p style={{ fontSize: "14px", color: "#6b7280" }}>Take a clear photo or upload an existing image</p>
       </div>
 
       {error && (
-        <p className="text-sm mb-4" style={{ color: "var(--color-danger, #a8211a)" }}>
-          {error}
-        </p>
+        <p style={{ fontSize: "13px", fontWeight: 500, color: "#dc2626", marginBottom: "16px" }}>{error}</p>
       )}
 
-      <div className="space-y-3">
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <button
           onClick={() => setShowCamera(true)}
-          className="w-full flex items-center justify-center gap-3 rounded-xl py-4 text-sm font-semibold transition-all"
-          style={{
-            backgroundColor: "var(--color-squad-orange, #f25c19)",
-            color: "#fff",
-          }}
+          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", borderRadius: "14px", padding: "16px", fontSize: "15px", fontWeight: 600, fontFamily: "inherit", border: "none", backgroundColor: "#f25c19", color: "#fff", cursor: "pointer" }}
         >
           Take a photo
         </button>
 
         <label
-          className="w-full flex items-center justify-center gap-3 rounded-xl py-4 text-sm font-medium cursor-pointer transition-all"
-          style={{
-            backgroundColor: "var(--color-surface-raised, #fff)",
-            border: "1px solid var(--border-default)",
-            color: "var(--color-text-primary)",
-          }}
+          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "14px", padding: "16px", fontSize: "15px", fontWeight: 500, fontFamily: "inherit", cursor: "pointer", backgroundColor: "#fff", border: "1.5px solid rgba(0,0,0,0.08)", color: "#374151" }}
         >
           Upload from gallery
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
+          <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
         </label>
       </div>
 
       <button
         onClick={() => setDocumentType(null)}
-        className="w-full mt-4 text-sm"
-        style={{ color: "var(--color-text-tertiary)" }}
+        style={{ width: "100%", marginTop: "16px", fontSize: "13px", fontFamily: "inherit", color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}
       >
         Choose a different document
       </button>

@@ -10,25 +10,19 @@ interface ProgressBarProps {
   onStepClick?: (step: number) => void;
 }
 
-const STEP_LABELS = [
-  "Details",
-  "Document",
-  "Liveness",
-  "Workspace",
-  "Goods",
-];
+const STEP_LABELS = ["Details", "Document", "Liveness", "Workspace", "Goods"];
 
-export default function KycProgressBar({ 
-  currentStep, 
+export default function KycProgressBar({
+  currentStep,
   totalSteps = 5,
   highestStep,
-  onStepClick
+  onStepClick,
 }: ProgressBarProps) {
   const maxStep = highestStep ?? currentStep;
 
   return (
-    <div className="w-full px-4 py-4">
-      <div className="flex items-center justify-between">
+    <div style={{ width: "100%", padding: "16px 20px 12px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {Array.from({ length: totalSteps }, (_, i) => {
           const step = i + 1;
           const isActive = step === currentStep;
@@ -36,45 +30,47 @@ export default function KycProgressBar({
           const isClickable = step <= maxStep;
 
           return (
-            <div key={step} className="flex items-center flex-1 last:flex-none">
-              {/* Step circle */}
-              <div 
-                className="flex flex-col items-center"
-                style={{ cursor: isClickable ? "pointer" : "default" }}
+            <div
+              key={step}
+              style={{ display: "flex", alignItems: "center", flex: step < totalSteps ? 1 : "none" }}
+            >
+              {/* Step circle + label */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  cursor: isClickable ? "pointer" : "default",
+                }}
                 onClick={() => isClickable && onStepClick?.(step)}
               >
                 <motion.div
-                  className="flex items-center justify-center rounded-full"
                   style={{
-                    width: 32,
-                    height: 32,
-                    backgroundColor: isCompleted
-                      ? "var(--color-success, #0f7a4d)"
-                      : isActive
-                        ? "var(--color-squad-orange, #f25c19)"
-                        : "var(--color-surface-muted, #edebe3)",
-                    color: isCompleted || isActive ? "#fff" : "var(--color-text-tertiary, #8b867e)",
-                    fontSize: 13,
-                    fontWeight: 600,
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: isCompleted ? "#059669" : isActive ? "#f25c19" : "#f3f4f6",
+                    color: isCompleted || isActive ? "#fff" : "#9ca3af",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    fontFamily: "inherit",
                   }}
                   initial={false}
-                  animate={{
-                    scale: isActive ? 1.1 : 1,
-                  }}
+                  animate={{ scale: isActive ? 1.1 : 1 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  {isCompleted ? <Check size={16} strokeWidth={3} /> : step}
+                  {isCompleted ? <Check size={14} strokeWidth={3} /> : step}
                 </motion.div>
                 <span
-                  className="mt-1"
                   style={{
+                    marginTop: "4px",
                     fontSize: 10,
                     fontWeight: isActive ? 600 : 400,
-                    color: isActive
-                      ? "var(--color-squad-orange, #f25c19)"
-                      : isCompleted
-                        ? "var(--color-success, #0f7a4d)"
-                        : "var(--color-text-tertiary, #8b867e)",
+                    fontFamily: "inherit",
+                    color: isActive ? "#f25c19" : isCompleted ? "#059669" : "#9ca3af",
                     letterSpacing: "0.02em",
                   }}
                 >
@@ -85,12 +81,11 @@ export default function KycProgressBar({
               {/* Connector line */}
               {step < totalSteps && (
                 <div
-                  className="flex-1 mx-1"
                   style={{
+                    flex: 1,
                     height: 2,
-                    backgroundColor: step < maxStep
-                      ? "var(--color-success, #0f7a4d)"
-                      : "var(--color-surface-muted, #edebe3)",
+                    backgroundColor: step < maxStep ? "#059669" : "#f3f4f6",
+                    margin: "0 4px",
                     marginBottom: 18,
                     borderRadius: 1,
                   }}

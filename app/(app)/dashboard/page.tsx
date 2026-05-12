@@ -40,7 +40,7 @@ export default async function DashboardPage() {
 
   if (!trader) {
     return (
-      <div className="pt-16 text-center" style={{ color: "var(--color-text-secondary, #5c5852)" }}>
+      <div style={{ paddingTop: "64px", textAlign: "center", color: "#6b7280" }}>
         <p>Something went wrong loading your account.</p>
       </div>
     );
@@ -54,35 +54,36 @@ export default async function DashboardPage() {
       {!isVerified && (
         <Link
           href="/verify"
-          className="mx-4 flex items-center gap-3 rounded-xl p-4 transition-all"
           style={{
-            backgroundColor: "var(--color-squad-orange-50, #fef1eb)",
-            border: "1px solid var(--color-squad-orange, #f25c19)",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            borderRadius: "16px",
+            padding: "14px 16px",
+            backgroundColor: "#fff4ef",
+            border: "1.5px solid #f25c19",
+            textDecoration: "none",
           }}
         >
-          <ShieldAlert
-            size={24}
-            style={{ color: "var(--color-squad-orange, #f25c19)", flexShrink: 0 }}
-          />
-          <div className="flex-1">
-            <p
-              className="text-sm font-semibold"
-              style={{ color: "var(--color-squad-orange-700, #a93808)" }}
-            >
+          <ShieldAlert size={22} color="#f25c19" style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: "14px", fontWeight: 700, color: "#c44112", letterSpacing: "-0.01em" }}>
               Complete your verification
             </p>
-            <p
-              className="text-xs mt-0.5"
-              style={{ color: "var(--color-squad-orange-600, #d44a0f)" }}
-            >
+            <p style={{ fontSize: "12px", color: "#d96830", marginTop: "2px" }}>
               Verify your identity to unlock borrowing and savings
             </p>
           </div>
           <span
-            className="text-xs font-medium px-2.5 py-1 rounded-full"
             style={{
-              backgroundColor: "var(--color-squad-orange, #f25c19)",
+              flexShrink: 0,
+              fontSize: "12px",
+              fontWeight: 600,
+              padding: "6px 14px",
+              borderRadius: "99px",
+              backgroundColor: "#f25c19",
               color: "#fff",
+              fontFamily: "inherit",
             }}
           >
             Start

@@ -250,10 +250,10 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
   const ringProgress = Math.min(1, (poseIndex + poseProgress) / totalPoses);
   const segmentAngles = [0, 120, 240];
 
-  const accentColor = "var(--color-squad-orange, #f25c19)";
-  const warningColor = "var(--color-warning, #f6c455)";
-  const dangerColor = "var(--color-danger, #e2433f)";
-  const successColor = "var(--color-success, #0f7a4d)";
+  const accentColor = "#f25c19";
+  const warningColor = "#f59e0b";
+  const dangerColor = "#dc2626";
+  const successColor = "#059669";
   const neutralColor = "rgba(255,255,255,0.4)";
 
   const ringColor = allDone
@@ -286,10 +286,8 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
 
   if (error) {
     return (
-      <div className="px-4 flex flex-col items-center justify-center py-16">
-        <p className="text-sm" style={{ color: "var(--color-danger)" }}>
-          {error}
-        </p>
+      <div style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "64px" }}>
+        <p style={{ fontSize: "14px", fontWeight: 500, color: "#dc2626", textAlign: "center" }}>{error}</p>
       </div>
     );
   }
@@ -298,34 +296,34 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="px-4"
+      style={{ padding: "20px" }}
     >
-      <div className="mb-4">
-        <h2 className="text-xl font-medium mb-1" style={{ color: "var(--color-text-primary)" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em", marginBottom: "4px", fontFamily: "inherit" }}>
           Liveness check
         </h2>
-        <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+        <p style={{ fontSize: "14px", color: "#6b7280" }}>
           Follow the instructions to verify you are a real person
         </p>
       </div>
 
       {!cameraReady && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <Loader2
-            size={48}
-            className="animate-spin mb-4"
-            style={{ color: "var(--color-squad-orange)" }}
-          />
-          <p className="text-sm font-medium" style={{ color: "var(--color-text-secondary)" }}>
-            Starting camera...
-          </p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "64px", paddingBottom: "64px" }}>
+          <Loader2 size={44} className="animate-spin" style={{ color: "#f25c19", marginBottom: "16px" }} />
+          <p style={{ fontSize: "14px", fontWeight: 500, color: "#6b7280" }}>Starting camera...</p>
         </div>
       )}
 
       {/* Camera feed (always rendered so ref works, hidden if not ready) */}
       <div
-        className={`relative w-full overflow-hidden rounded-xl ${!cameraReady ? "hidden" : "block"}`}
-        style={{ backgroundColor: "#000" }}
+        style={{
+          position: "relative",
+          width: "100%",
+          overflow: "hidden",
+          borderRadius: "16px",
+          backgroundColor: "#000",
+          display: !cameraReady ? "none" : "block",
+        }}
       >
         <video
           ref={videoRef}
