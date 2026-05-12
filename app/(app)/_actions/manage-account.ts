@@ -49,7 +49,8 @@ export async function deactivateTraderAccount() {
 
   // Mark the trader account as deactivated by setting a flag or status
   // (You may want to add a status column to the traders table for this)
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from("traders")
     .update({ kyc_status: "deactivated" })
     .eq("id", session.traderId);

@@ -41,7 +41,7 @@ export default async function WelcomePage() {
         Your Squad account is ready. Every payment you receive builds your credit score and unlocks working capital.
       </p>
 
-      {trader?.virtual_account_number && (
+      {trader?.virtual_account_number ? (
         <div
           style={{
             backgroundColor: "#fff",
@@ -69,7 +69,7 @@ export default async function WelcomePage() {
             GTBank · Share this number to receive payments
           </p>
         </div>
-      )}
+      ) : null}
 
       <Link
         href="/dashboard?showKyc=1"

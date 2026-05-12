@@ -15,7 +15,7 @@ export default async function DashboardPage({
   searchParams,
 }: {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-} = {}) {
+}) {
   const session = await getSession();
   const traderId = session.traderId;
 
@@ -74,7 +74,7 @@ export default async function DashboardPage({
     <div style={{ paddingTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
       <RealtimeRefresher traderId={trader.id} />
 
-      {!isVerified && (
+      {!isVerified ? (
         <div
           style={{
             borderRadius: "18px",
@@ -92,9 +92,9 @@ export default async function DashboardPage({
             Your account is active, but verification is not finished yet. Complete KYC to unlock the full dashboard.
           </div>
         </div>
-      )}
+      ) : null}
 
-      {!isVerified && (
+      {!isVerified ? (
         <KycLauncher
           traderId={trader.id}
           initialStep={1}
@@ -108,7 +108,7 @@ export default async function DashboardPage({
             businessType: trader.business_type ?? "",
           }}
         />
-      )}
+      ) : null}
 
       <ScoreCard
         firstName={trader.first_name}
@@ -121,7 +121,7 @@ export default async function DashboardPage({
 
       <DashboardAccountMenu />
 
-      {activeLoan && isVerified && <LoanBanner loan={activeLoan} />}
+      {activeLoan && isVerified ? <LoanBanner loan={activeLoan} /> : null}
 
       <TransactionFeed transactions={transactions} />
     </div>

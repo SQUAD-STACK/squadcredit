@@ -68,13 +68,13 @@ export default async function BorrowPage() {
           {hasLimit ? "Repaid automatically from your daily sales" : "Receive your first payment to unlock borrowing"}
         </p>
 
-        {hasLimit && (
+        {hasLimit ? (
           <div style={{ display: "inline-flex", marginTop: "16px", backgroundColor: "rgba(255,255,255,0.18)", borderRadius: "99px", padding: "5px 14px" }}>
             <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "#fff" }}>
               {tier.label} tier
             </span>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Tier ladder */}
@@ -103,7 +103,7 @@ export default async function BorrowPage() {
       </div>
 
       {/* Loan breakdown */}
-      {hasLimit && (
+      {hasLimit ? (
         <div style={{ backgroundColor: "#fff", borderRadius: "20px", overflow: "hidden", marginBottom: "14px", boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)" }}>
           <div style={{ padding: "18px 20px", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
             <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#111827", letterSpacing: "-0.02em" }}>
@@ -120,7 +120,7 @@ export default async function BorrowPage() {
             </div>
           ))}
         </div>
-      )}
+      ) : null}
 
       <p style={{ fontSize: "12px", color: "#9ca3af", textAlign: "center", marginBottom: "16px", lineHeight: "18px" }}>
         No hidden fees. All fees shown are the total cost.
@@ -133,11 +133,11 @@ export default async function BorrowPage() {
         {hasLimit ? `Get ${formatNaira(creditLimit)} now` : "Build your score to borrow"}
       </button>
 
-      {hasLimit && (
+      {hasLimit ? (
         <p style={{ fontSize: "12px", color: "#9ca3af", textAlign: "center", marginTop: "10px" }}>
           Disbursement going live soon.
         </p>
-      )}
+      ) : null}
     </div>
   );
 }

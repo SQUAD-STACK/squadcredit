@@ -175,11 +175,11 @@ export default function AccountManagerModal({ open, onOpenChange }: AccountManag
                 </div>
               </div>
 
-              {error && (
+              {error ? (
                 <div style={{ background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 12, padding: 12 }}>
                   <p style={{ fontSize: 13, color: "#7f1d1d" }}>{error}</p>
                 </div>
-              )}
+              ) : null}
 
               <div style={{ display: "flex", gap: 12 }}>
                 <button
@@ -260,7 +260,7 @@ export default function AccountManagerModal({ open, onOpenChange }: AccountManag
                         {account.virtualAccount}
                       </code>
                       <button
-                        onClick={() => handleCopy(account.virtualAccount)}
+                        onClick={() => handleCopy(account.virtualAccount ?? "")}
                         style={{
                           background: "#fff",
                           border: "1px solid rgba(15,23,42,0.08)",
@@ -273,7 +273,7 @@ export default function AccountManagerModal({ open, onOpenChange }: AccountManag
                         <Copy size={16} />
                       </button>
                     </div>
-                    {copied && <p style={{ fontSize: 11, color: "#059669", marginTop: 4 }}>✓ Copied to clipboard</p>}
+                    {copied ? <p style={{ fontSize: 11, color: "#059669", marginTop: 4 }}>✓ Copied to clipboard</p> : null}
                   </div>
 
                   <div>
