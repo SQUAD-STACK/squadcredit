@@ -23,8 +23,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  if (!verifySquadSignature(payload, signature)) {
-    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+  const skipSig = process.env.SKIP_WEBHOOK_SIG === "true";
+  const keyConfigured = !!process.env.SQUAD_SECRET_KEY;
+
+  if (!skipSig && keyConfigured) {
+    if (!verifySquadSignature(payload, signature)) {
+      console.error("[webhook] signature mismatch — check SQUAD_SECRET_KEY matches Squad's signing key");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+  } else if (!skipSig && !keyConfigured) {
+    console.warn("[webhook] SQUAD_SECRET_KEY not set — skipping signature verification");
   }
 
   // Only process inbound credit transactions
