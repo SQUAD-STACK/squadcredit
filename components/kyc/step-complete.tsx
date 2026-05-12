@@ -12,7 +12,11 @@ const STEPS_SUMMARY = [
   "Merchandise verified",
 ];
 
-export default function StepComplete() {
+interface StepCompleteProps {
+  dashboardHref?: string;
+}
+
+export default function StepComplete({ dashboardHref = "/dashboard?showKyc=1" }: StepCompleteProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -124,7 +128,7 @@ export default function StepComplete() {
         style={{ width: "100%" }}
       >
         <Link
-          href="/dashboard"
+          href={dashboardHref}
           style={{
             width: "100%",
             padding: "16px 24px",

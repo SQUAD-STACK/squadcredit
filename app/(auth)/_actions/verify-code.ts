@@ -38,21 +38,28 @@ export async function verifyCode(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase as any)
     .from("traders")
-    .select("id, first_name, last_name, market, business_type")
+    .select("id, first_name, last_name, market, business_type, kyc_status")
     .eq("phone", session.phone)
     .maybeSingle();
 
-  const existing = data as Pick<Trader, "id" | "first_name" | "last_name" | "market" | "business_type"> | null;
+  const existing = data as Pick<Trader, "id" | "first_name" | "last_name" | "market" | "business_type" | "kyc_status"> | null;
 
   if (existing) {
-    // Returning user — restore session and go straight to dashboard
+    // Returning user — restore session.
     session.traderId = existing.id;
     session.firstName = existing.first_name;
     session.lastName = existing.last_name;
     session.market = existing.market;
     session.businessType = existing.business_type;
     await session.save();
-    redirect("/dashboard");
+
+    // If trader is fully verified, send to dashboard.
+    if (existing.kyc_status === "verified") {
+      redirect("/dashboard");
+    }
+
+    // Not verified — send to dashboard so the KYC modal can open on top of it.
+    redirect("/dashboard?showKyc=1");
   }
 
   // New user — continue signup flow

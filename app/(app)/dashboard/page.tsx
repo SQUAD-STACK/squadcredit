@@ -4,16 +4,28 @@ import type { Trader, Transaction, Loan, Savings } from "@/lib/supabase/types";
 import ScoreCard from "@/components/score-card";
 import TransactionFeed from "@/components/transaction-feed";
 import LoanBanner from "@/components/loan-banner";
-import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ShieldAlert } from "lucide-react";
 import RealtimeRefresher from "@/components/realtime-refresher";
+import KycLauncher from "@/components/kyc/kyc-launcher";
+import DashboardAccountMenu from "@/components/dashboard-account-menu";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+} = {}) {
   const session = await getSession();
-  const traderId = session.traderId!;
+  const traderId = session.traderId;
+
+  if (!traderId) {
+    return (
+      <div style={{ paddingTop: "64px", textAlign: "center", color: "#6b7280" }}>
+        <p>Start onboarding to access your dashboard.</p>
+      </div>
+    );
+  }
 
   const supabase = await createServiceClient();
 
@@ -48,14 +60,54 @@ export default async function DashboardPage() {
   }
 
   const isVerified = trader.kyc_status === "verified";
-
-  if (!isVerified) {
-    redirect("/verify");
-  }
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const wantKyc = (() => {
+    const value = resolvedSearchParams?.showKyc;
+    if (!value) return false;
+    if (Array.isArray(value)) return value.includes("1") || value.includes("true");
+    return value === "1" || value === "true";
+  })();
 
   return (
     <div style={{ paddingTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
       <RealtimeRefresher traderId={trader.id} />
+
+      {!isVerified && (
+        <div
+          style={{
+            borderRadius: "18px",
+            padding: "14px 16px",
+            backgroundColor: "rgba(245, 158, 11, 0.08)",
+            border: "1px solid rgba(245, 158, 11, 0.18)",
+            color: "#7c2d12",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <ShieldAlert size={18} />
+          <div style={{ fontSize: "14px", lineHeight: "20px" }}>
+            Your account is active, but verification is not finished yet. Complete KYC to unlock the full dashboard.
+          </div>
+        </div>
+      )}
+
+      {!isVerified && (
+        <KycLauncher
+          traderId={trader.id}
+          initialStep={1}
+          initialOpen={wantKyc || !isVerified}
+          traderData={{
+            firstName: trader.first_name,
+            lastName: trader.last_name,
+            phone: trader.phone,
+            email: trader.email ?? "",
+            market: trader.market ?? "",
+            businessType: trader.business_type ?? "",
+          }}
+        />
+      )}
+
       <ScoreCard
         firstName={trader.first_name}
         trustScore={trader.trust_score}
@@ -64,6 +116,8 @@ export default async function DashboardPage() {
         virtualAccountNumber={trader.virtual_account_number ?? ""}
         verified={isVerified}
       />
+
+      <DashboardAccountMenu />
 
       {activeLoan && isVerified && <LoanBanner loan={activeLoan} />}
 
