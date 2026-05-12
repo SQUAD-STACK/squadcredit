@@ -4,7 +4,7 @@ import type { InputHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react
 
 export function Input({
   label,
-  className: _,
+  className,
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
   return (
@@ -24,6 +24,7 @@ export function Input({
       )}
       <input
         id={props.id ?? props.name}
+        className={className}
         style={{
           width: "100%",
           padding: "15px 18px",

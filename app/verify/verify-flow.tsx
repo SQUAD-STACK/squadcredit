@@ -38,7 +38,6 @@ export default function VerifyFlow({
 }: VerifyFlowProps) {
   const [internalStep, setInternalStep] = useState(initialStep);
   const [maxStep, setMaxStep] = useState(initialStep);
-  const [businessType, setBusinessType] = useState(traderData.businessType);
   const router = useRouter();
 
   const currentStep = activeStep ?? internalStep;
@@ -113,7 +112,7 @@ export default function VerifyFlow({
         return (
           <StepMerchandise
             traderId={traderId}
-            businessType={businessType}
+            businessType={traderData.businessType}
             onComplete={advanceStep}
           />
         );

@@ -10,8 +10,17 @@ interface AccountManagerModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface ManagedAccount {
+  name: string;
+  phone: string;
+  virtualAccount: string | null | undefined;
+  bankName: string;
+  beneficiaryAccount: string | null | undefined;
+  verificationStatus: string | null | undefined;
+}
+
 export default function AccountManagerModal({ open, onOpenChange }: AccountManagerModalProps) {
-  const [account, setAccount] = useState<any>(null);
+  const [account, setAccount] = useState<ManagedAccount | null>(null);
   const [loading, setLoading] = useState(true);
   const [deactivating, setDeactivating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -289,7 +298,7 @@ export default function AccountManagerModal({ open, onOpenChange }: AccountManag
               {/* Info Box */}
               <div style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.16)", borderRadius: 12, padding: 14, display: "flex", gap: 10 }}>
                 <div style={{ fontSize: 12, color: "#1e40af", lineHeight: 1.6 }}>
-                  <strong>Squad Account Limit:</strong> If you've reached your limit, you can deactivate this account below or log into your Squad dashboard to manage multiple accounts.
+                  <strong>Squad Account Limit:</strong> If you&apos;ve reached your limit, you can deactivate this account below or log into your Squad dashboard to manage multiple accounts.
                 </div>
               </div>
 

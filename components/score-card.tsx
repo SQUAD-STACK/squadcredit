@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { animate } from "framer-motion";
 import { formatNaira } from "@/lib/format";
-import { Lock } from "lucide-react";
 
 interface ScoreCardProps {
   firstName: string;
@@ -37,7 +36,6 @@ export default function ScoreCard({
   creditLimit,
   savingsBalance,
   virtualAccountNumber,
-  verified = true,
 }: ScoreCardProps) {
   const pct = Math.min((trustScore / 1000) * 100, 100);
 
