@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Camera, SwitchCamera, X } from "lucide-react";
+import { getCameraErrorMessage, waitForVideoReady } from "@/lib/camera";
 
 interface CameraViewProps {
   onCapture: (base64: string, mimeType: string) => void;
@@ -27,6 +28,14 @@ export default function CameraView({
 
   const startCamera = useCallback(async (facingMode: string) => {
     try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Your browser does not support camera access.");
+      }
+
+      if (!window.isSecureContext && window.location.hostname !== "localhost") {
+        throw new Error("Camera access requires HTTPS or localhost.");
+      }
+
       // Stop any existing stream
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
@@ -41,12 +50,20 @@ export default function CameraView({
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        await waitForVideoReady(videoRef.current);
+
+        try {
+          await videoRef.current.play();
+        } catch {
+          await new Promise((resolve) => window.requestAnimationFrame(resolve));
+          await videoRef.current.play();
+        }
+
         setIsReady(true);
         setError(null);
       }
-    } catch {
-      setError("Camera access denied. Please allow camera permissions and try again.");
+    } catch (error) {
+      setError(getCameraErrorMessage(error));
       setIsReady(false);
     }
   }, []);

@@ -40,7 +40,11 @@ export default function StepWorkspace({ traderId, onComplete }: StepWorkspacePro
   // Phase 1: Camera
   if (!capturedImage && !processing && !result) {
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ padding: "20px" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ paddingTop: "20px", paddingRight: "20px", paddingBottom: "20px", paddingLeft: "20px" }}
+      >
         <div style={{ marginBottom: "16px" }}>
           <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em", marginBottom: "4px", fontFamily: "inherit" }}>
             Show your workspace
@@ -55,7 +59,20 @@ export default function StepWorkspace({ traderId, onComplete }: StepWorkspacePro
   // Phase 2: Processing
   if (processing) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "64px", paddingBottom: "64px" }}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        style={{
+          paddingTop: "64px",
+          paddingRight: "20px",
+          paddingBottom: "64px",
+          paddingLeft: "20px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Loader2 size={44} className="animate-spin" style={{ color: "#f25c19", marginBottom: "16px" }} />
         <p style={{ fontSize: "14px", fontWeight: 600, color: "#374151" }}>Analyzing your workspace...</p>
         <p style={{ fontSize: "13px", color: "#9ca3af", marginTop: "4px" }}>Our AI is scanning for your business environment</p>
@@ -67,7 +84,11 @@ export default function StepWorkspace({ traderId, onComplete }: StepWorkspacePro
   if (result && capturedImage) {
     const isGood = result.is_workspace;
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ padding: "20px" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ paddingTop: "20px", paddingRight: "20px", paddingBottom: "20px", paddingLeft: "20px" }}
+      >
         <div style={{ marginBottom: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
             <MapPin size={20} color="#059669" />

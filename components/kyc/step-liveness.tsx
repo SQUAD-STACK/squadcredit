@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, type Transition } from "framer-motion";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { submitLivenessResult, checkLivenessPoseWithGemini } from "@/app/verify/actions";
+import { getCameraErrorMessage, waitForVideoReady } from "@/lib/camera";
 
 interface StepLivenessProps {
   traderId: string;
@@ -186,6 +187,14 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
   useEffect(() => {
     const startCamera = async () => {
       try {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error("Your browser does not support camera access.");
+        }
+
+        if (!window.isSecureContext && window.location.hostname !== "localhost") {
+          throw new Error("Camera access requires HTTPS or localhost.");
+        }
+
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
           audio: false,
@@ -193,11 +202,19 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          await videoRef.current.play();
+          await waitForVideoReady(videoRef.current);
+
+          try {
+            await videoRef.current.play();
+          } catch {
+            await new Promise((resolve) => window.requestAnimationFrame(resolve));
+            await videoRef.current.play();
+          }
+
           setCameraReady(true);
         }
-      } catch {
-        setError("Camera access denied. Please allow camera permissions.");
+      } catch (error) {
+        setError(getCameraErrorMessage(error));
       }
     };
 
