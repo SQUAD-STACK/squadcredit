@@ -28,7 +28,7 @@ export async function saveBusinessType(
   const traderId = crypto.randomUUID();
   const customer_identifier = `trader_${traderId}`;
 
-  let virtualAccountNumber: string;
+  let virtualAccountNumber = "";
   try {
     const vaRes = await createVirtualAccount({
       customer_identifier,
@@ -43,13 +43,15 @@ export async function saveBusinessType(
       beneficiary_account: "4920299492",
     });
     if (!vaRes.data?.virtual_account_number) {
-      console.error("[onboard] Squad returned no NUBAN — full response:", JSON.stringify(vaRes));
-      return { error: "We couldn't create your payment account. Please try again." };
+      console.warn("[onboard] Squad returned no NUBAN — will proceed without one:", JSON.stringify(vaRes));
+    } else {
+      virtualAccountNumber = vaRes.data.virtual_account_number;
     }
-    virtualAccountNumber = vaRes.data.virtual_account_number;
   } catch (err: unknown) {
-    console.error("[onboard] Squad VA creation failed:", err);
-    return { error: "We couldn't create your payment account. Please try again." };
+    // Non-blocking: log the error but allow onboarding to continue.
+    // Common causes: account limit reached (422) or network timeout (ETIMEDOUT).
+    // The virtual account can be assigned later manually via Squad support.
+    console.warn("[onboard] Squad VA creation failed (non-blocking):", err);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

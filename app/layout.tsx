@@ -41,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
+      <body suppressHydrationWarning className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
         {children}
       </body>
     </html>

@@ -60,13 +60,15 @@ export default async function DashboardPage({
   }
 
   const isVerified = trader.kyc_status === "verified";
-  const resolvedSearchParams = await Promise.resolve(searchParams);
-  const wantKyc = (() => {
-    const value = resolvedSearchParams?.showKyc;
-    if (!value) return false;
-    if (Array.isArray(value)) return value.includes("1") || value.includes("true");
-    return value === "1" || value === "true";
-  })();
+  const resolvedParams = searchParams ? await searchParams : {};
+  const showKycParam = resolvedParams?.showKyc;
+  const wantKyc =
+    showKycParam === "1" ||
+    showKycParam === "true" ||
+    (Array.isArray(showKycParam) && (showKycParam.includes("1") || showKycParam.includes("true")));
+
+  // Auto-open KYC modal for any unverified user regardless of query param
+  const openKyc = !isVerified && (wantKyc || true);
 
   return (
     <div style={{ paddingTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -96,7 +98,7 @@ export default async function DashboardPage({
         <KycLauncher
           traderId={trader.id}
           initialStep={1}
-          initialOpen={wantKyc || !isVerified}
+          initialOpen={openKyc}
           traderData={{
             firstName: trader.first_name,
             lastName: trader.last_name,

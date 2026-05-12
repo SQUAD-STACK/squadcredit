@@ -55,10 +55,7 @@ export default function KycModal({ open, onOpenChange, traderId, initialStep, tr
     >
       {/* Backdrop with blur */}
       <div
-        onClick={() => {
-          setOpen(false);
-          onClose?.();
-        }}
+        onClick={() => onOpenChange(false)}
         style={{
           position: "absolute",
           inset: 0,
