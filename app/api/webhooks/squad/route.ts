@@ -23,16 +23,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  // ── Signature verification ──
   const skipSig = process.env.SKIP_WEBHOOK_SIG === "true";
   const keyConfigured = !!process.env.SQUAD_SECRET_KEY;
 
   if (!skipSig && keyConfigured) {
     if (!verifySquadSignature(payload, signature)) {
-      console.error("[webhook] signature mismatch — check SQUAD_SECRET_KEY matches Squad's signing key");
+      console.error(
+        "[webhook] signature mismatch — check SQUAD_SECRET_KEY matches Squad's signing key",
+      );
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
   } else if (!skipSig && !keyConfigured) {
-    console.warn("[webhook] SQUAD_SECRET_KEY not set — skipping signature verification");
+    console.warn(
+      "[webhook] SQUAD_SECRET_KEY not set — skipping signature verification",
+    );
   }
 
   // Only process inbound credit transactions
@@ -41,44 +46,86 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = await createServiceClient();
-
-  // customer_identifier is "trader_<uuid>" — extract the uuid
-  const traderId = payload.customer_identifier.replace(/^trader_/, "");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: _traderRes } = await (supabase as any)
+  const db = supabase as any;
+
+  // ── Look up trader by customer_identifier ──
+  const traderId = payload.customer_identifier.replace(/^trader_/, "");
+  const { data: traderData } = await db
     .from("traders")
     .select("*")
     .eq("id", traderId)
     .maybeSingle();
 
-  const trader = _traderRes as Trader | null;
+  const trader = traderData as Trader | null;
 
   if (!trader) {
-    console.warn("[webhook] no trader found for customer_identifier:", payload.customer_identifier);
+    console.warn(
+      "[webhook] no trader for customer_identifier:",
+      payload.customer_identifier,
+    );
     return ok(payload.transaction_reference);
   }
 
   const settledAmount = parseFloat(payload.settled_amount);
   const principalAmount = parseFloat(payload.principal_amount);
 
-  // ── Loan repayment holdback (T2+ only; T0/T1 use bullet repayment) ──
-  const { data: _loanRes } = await supabase
-    .from("loans")
-    .select("*")
-    .eq("trader_id", trader.id)
-    .eq("status", "active")
-    .maybeSingle();
+  // ── Write the transaction first (idempotent on reference) ──
+  const { error: txError } = await db.from("transactions").upsert(
+    {
+      trader_id: trader.id,
+      transaction_reference: payload.transaction_reference,
+      sender_name: payload.sender_name,
+      sender_account: payload.masked_sender_account_number ?? null,
+      amount: principalAmount,
+      settled_amount: settledAmount,
+      transaction_date: payload.transaction_date,
+      raw_payload: payload,
+    },
+    { onConflict: "transaction_reference", ignoreDuplicates: true },
+  );
 
-  const activeLoan = _loanRes as Loan | null;
+  if (txError) {
+    console.error("[webhook] transaction upsert failed:", txError);
+    return NextResponse.json({ error: "DB error" }, { status: 500 });
+  }
 
-  // Use an untyped alias for mutations — our DB type is missing Supabase's
-  // internal Relationships field, which collapses mutation argument types to never.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const db = supabase as any;
+  // ── Fetch related rows in parallel ──
+  const [loanRes, savingsRes, allTxRes] = await Promise.all([
+    db
+      .from("loans")
+      .select("*")
+      .eq("trader_id", trader.id)
+      .eq("status", "active")
+      .maybeSingle(),
+    db.from("savings").select("*").eq("trader_id", trader.id).maybeSingle(),
+    db
+      .from("transactions")
+      .select("*")
+      .eq("trader_id", trader.id)
+      .order("transaction_date", { ascending: false }),
+  ]);
 
+  const activeLoan = loanRes.data as Loan | null;
+  const savings = savingsRes.data as Savings | null;
+  const allTx = (allTxRes.data ?? []) as Transaction[];
+
+  // ── Compute splits: how this payment is divided ──
+  let loanHoldback = 0;
   if (activeLoan && activeLoan.tier >= 2) {
-    const holdback = settledAmount * Number(activeLoan.holdback_percentage);
-    const newRepaid = Number(activeLoan.amount_repaid) + holdback;
+    loanHoldback = settledAmount * Number(activeLoan.holdback_percentage);
+  }
+
+  let savingsSweep = 0;
+  if (savings && settledAmount >= Number(savings.rule_threshold)) {
+    savingsSweep = settledAmount * Number(savings.rule_percentage);
+  }
+
+  const toWallet = settledAmount - loanHoldback - savingsSweep;
+
+  // ── Update loan if there's an active holdback ──
+  if (activeLoan && loanHoldback > 0) {
+    const newRepaid = Number(activeLoan.amount_repaid) + loanHoldback;
     const isFullyRepaid = newRepaid >= Number(activeLoan.total_due);
 
     await db
@@ -91,60 +138,47 @@ export async function POST(req: NextRequest) {
       .eq("id", activeLoan.id);
   }
 
-  // ── Write transaction — upsert is idempotent on transaction_reference ──
-  const { error: txError } = await db.from("transactions").upsert(
-    {
-      trader_id: trader.id,
-      transaction_reference: payload.transaction_reference,
-      sender_name: payload.sender_name,
-      sender_account: payload.masked_sender_account_number ?? null,
-      amount: principalAmount,
-      settled_amount: settledAmount,
-      transaction_date: payload.transaction_date,
-      raw_payload: payload,
-    },
-    { onConflict: "transaction_reference", ignoreDuplicates: true }
-  );
-
-  if (txError) {
-    console.error("[webhook] transaction upsert failed:", txError);
-    return NextResponse.json({ error: "DB error" }, { status: 500 });
-  }
-
-  // ── Fetch full transaction history and recompute score ──
-  const { data: allTxRaw } = await supabase
-    .from("transactions")
-    .select("*")
-    .eq("trader_id", trader.id)
-    .order("transaction_date", { ascending: false });
-
-  const { trustScore, creditLimit } = computeScore(
-    (allTxRaw ?? []) as Transaction[],
-    trader.created_at
-  );
-
-  // ── Savings auto-sweep ──
-  const { data: _savingsRes } = await supabase
-    .from("savings")
-    .select("*")
-    .eq("trader_id", trader.id)
-    .maybeSingle();
-
-  const savings = _savingsRes as Savings | null;
-
-  if (savings && settledAmount >= Number(savings.rule_threshold)) {
-    const sweep = settledAmount * Number(savings.rule_percentage);
+  // ── Update savings balance if there's a sweep ──
+  if (savings && savingsSweep > 0) {
     await db
       .from("savings")
-      .update({ balance: Number(savings.balance) + sweep })
+      .update({ balance: Number(savings.balance) + savingsSweep })
       .eq("id", savings.id);
   }
 
-  // ── Update trader record — triggers Realtime broadcast ──
-  await db
+  // ── Recompute trust score and credit limit ──
+  const { trustScore, creditLimit } = computeScore(allTx, trader.created_at);
+
+  // ── Compute updated active loan balance ──
+  const newActiveLoanBalance = activeLoan
+    ? Math.max(
+        0,
+        Number(activeLoan.total_due) -
+          (Number(activeLoan.amount_repaid) + loanHoldback),
+      )
+    : 0;
+
+  // ── Single atomic trader update — touches Realtime once ──
+  const { error: traderUpdateError } = await db
     .from("traders")
-    .update({ trust_score: trustScore, credit_limit: creditLimit })
+    .update({
+      trust_score: trustScore,
+      credit_limit: creditLimit,
+      wallet_balance: Number(trader.wallet_balance ?? 0) + toWallet,
+      total_inflows: Number(trader.total_inflows ?? 0) + settledAmount,
+      lifetime_saved: Number(trader.lifetime_saved ?? 0) + savingsSweep,
+      active_loan_balance: newActiveLoanBalance,
+    })
     .eq("id", trader.id);
+
+  if (traderUpdateError) {
+    console.error("[webhook] trader update failed:", traderUpdateError);
+    return NextResponse.json({ error: "DB error" }, { status: 500 });
+  }
+
+  console.log(
+    `[webhook] processed ${payload.transaction_reference}: +₦${settledAmount} (wallet: +${toWallet}, savings: +${savingsSweep}, loan: -${loanHoldback}) → score ${trustScore}`,
+  );
 
   return ok(payload.transaction_reference);
 }

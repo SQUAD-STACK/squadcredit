@@ -2,6 +2,7 @@ import { getSession } from "@/lib/session";
 import { createServiceClient } from "@/lib/supabase/server";
 import type { Trader, Transaction, Loan, Savings } from "@/lib/supabase/types";
 import ScoreCard from "@/components/score-card";
+import DashboardCarousel from "@/components/dashboard-carousel";
 import TransactionFeed from "@/components/transaction-feed";
 import LoanBanner from "@/components/loan-banner";
 import { ShieldAlert } from "lucide-react";
@@ -110,13 +111,17 @@ export default async function DashboardPage({
         />
       ) : null}
 
-      <ScoreCard
+      <DashboardCarousel
         firstName={trader.first_name}
-        trustScore={trader.trust_score}
+        walletBalance={Number(trader.wallet_balance ?? 0)}
+        totalInflows={Number(trader.total_inflows ?? 0)}
         creditLimit={Number(trader.credit_limit)}
-        savingsBalance={savings ? Number(savings.balance) : 0}
         virtualAccountNumber={trader.virtual_account_number ?? ""}
-        verified={isVerified}
+      />
+
+      <ScoreCard
+        trustScore={trader.trust_score}
+        savingsBalance={savings ? Number(savings.balance) : 0}
       />
 
       <DashboardAccountMenu />
