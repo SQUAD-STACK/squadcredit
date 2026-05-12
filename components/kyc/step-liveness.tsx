@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { submitLivenessResult, checkLivenessPoseWithGemini } from "@/app/verify/actions";
 
@@ -137,7 +137,7 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
         verifyInFlightRef.current = false;
       }
     },
-    [poseIndex, updatePoseStatus, checkLivenessPoseWithGemini]
+    [poseIndex, updatePoseStatus]
   );
 
   const startPoseCapture = useCallback(() => {
@@ -269,9 +269,9 @@ export default function StepLiveness({ traderId, onComplete }: StepLivenessProps
     : neutralColor;
 
   const pulseActive = poseStatus === "capturing" && !allDone;
-  const pulseTransition = pulseActive
-    ? { duration: 1.6, repeat: Infinity, ease: "easeInOut" }
-    : { duration: 0.3, ease: "easeOut" };
+  const pulseTransition: Transition = pulseActive
+    ? { duration: 1.6, repeat: Infinity, repeatType: "loop", ease: [0.42, 0, 0.58, 1] as [number, number, number, number] }
+    : { duration: 0.3, ease: [0.42, 0, 0.58, 1] as [number, number, number, number] };
 
   const targetStroke = ringColor === neutralColor ? "rgba(255,255,255,0.35)" : ringColor;
   const targetFill = ringColor === neutralColor
