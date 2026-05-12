@@ -3,7 +3,7 @@ export function generateOtp(): string {
 }
 
 export async function sendOtp(phone: string, otp: string): Promise<void> {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" || process.env.ALLOW_TEST_OTP === "true") {
     console.log(`\n📱 OTP for ${phone}: ${otp}\n`);
     return;
   }
