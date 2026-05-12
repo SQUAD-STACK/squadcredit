@@ -26,6 +26,10 @@ export interface Database {
           bvn: string | null;
           trust_score: number;
           credit_limit: number;
+          wallet_balance: number;
+          total_inflows: number;
+          lifetime_saved: number;
+          active_loan_balance: number;
           kyc_status: "pending" | "in_progress" | "verified" | "rejected";
           created_at: string;
         };
@@ -36,6 +40,10 @@ export interface Database {
           id?: string;
           trust_score?: number;
           credit_limit?: number;
+          wallet_balance?: number;
+          total_inflows?: number;
+          lifetime_saved?: number;
+          active_loan_balance?: number;
           kyc_status?: "pending" | "in_progress" | "verified" | "rejected";
         };
         Update: Partial<Database["public"]["Tables"]["traders"]["Insert"]>;
