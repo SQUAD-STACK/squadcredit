@@ -2,19 +2,24 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { Trader, KycVerification } from "@/lib/supabase/types";
 import VerifyFlow from "./verify-flow";
-
-const DEMO_TRADER_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function VerifyPage() {
+  const session = await getSession();
+  const traderId = session.traderId;
+
+  if (!traderId) {
+    redirect("/onboard");
+  }
+
   const supabase = await createServiceClient();
 
-  // Get trader
   const { data: traderData } = await supabase
     .from("traders")
     .select("*")
-    .eq("id", DEMO_TRADER_ID)
+    .eq("id", traderId)
     .single();
 
   const trader = traderData as Trader | null;
@@ -32,11 +37,10 @@ export default async function VerifyPage() {
     redirect("/dashboard");
   }
 
-  // Get existing KYC verification record
   const { data: kycData } = await supabase
     .from("kyc_verifications")
     .select("*")
-    .eq("trader_id", DEMO_TRADER_ID)
+    .eq("trader_id", traderId)
     .maybeSingle();
 
   const kyc = kycData as KycVerification | null;
@@ -44,7 +48,7 @@ export default async function VerifyPage() {
 
   return (
     <VerifyFlow
-      traderId={DEMO_TRADER_ID}
+      traderId={traderId}
       initialStep={currentStep}
       traderData={{
         firstName: trader.first_name,
