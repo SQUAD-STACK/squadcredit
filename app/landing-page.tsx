@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useScroll, AnimatePresence, PanInfo } from 'framer-motion';
+import { useRef, useState } from 'react';
 import './landing.css';
 
 const fadeUp = {
@@ -24,6 +24,8 @@ const staggerContainer = {
     }
   }
 };
+
+const views = ['dashboard', 'store'];
 
 export default function LandingPage() {
   const router = useRouter();
@@ -61,6 +63,47 @@ export default function LandingPage() {
     y.set(0);
   };
 
+  // Hologram swipe state
+  const [viewIndex, setViewIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const handleDragEnd = (e: any, { offset, velocity }: PanInfo) => {
+    const swipe = offset.x;
+    if (swipe < -50) {
+      setDirection(1);
+      setViewIndex((prev) => (prev + 1) % views.length);
+    } else if (swipe > 50) {
+      setDirection(-1);
+      setViewIndex((prev) => (prev - 1 + views.length) % views.length);
+    }
+  };
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 100 : -100,
+      opacity: 0,
+      rotateY: direction > 0 ? 45 : -45,
+      filter: 'brightness(2) hue-rotate(90deg) blur(4px)',
+      scale: 0.9,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      rotateY: 0,
+      filter: 'brightness(1) hue-rotate(0deg) blur(0px)',
+      scale: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 100 : -100,
+      opacity: 0,
+      rotateY: direction < 0 ? 45 : -45,
+      filter: 'brightness(2) hue-rotate(90deg) blur(4px)',
+      scale: 0.9,
+    })
+  };
+
   return (
     <div className="landing-page-container">
       <h2 className="sr-only">Squad Credit homepage — working capital for Nigerian market traders, built on trust</h2>
@@ -72,10 +115,9 @@ export default function LandingPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <div className="nav-logo" onClick={() => router.push('/')}>
-          <div className="logo-mark">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6.5v5C4 16.1 7.4 20.7 12 22c4.6-1.3 8-5.9 8-10.5v-5L12 2z"/></svg>
-          </div>
-          <span className="logo-name">Squad <span>Credit</span></span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="SquadCredit" width={34} height={34} style={{ flexShrink: 0 }} />
+          <span className="logo-name">SquadCredit</span>
         </div>
         <ul className="nav-links">
           <li><a href="#">How it works</a></li>
@@ -87,6 +129,7 @@ export default function LandingPage() {
         <div className="nav-right">
           <button className="btn-ghost" onClick={() => router.push('/login')}>Sign in</button>
           <button className="btn-brand" onClick={() => router.push('/login')}>Open account ↗</button>
+          <button className="mobile-menu-btn" onClick={() => router.push('/login')}><i className="ti ti-menu-2"></i></button>
         </div>
       </motion.nav>
 
@@ -146,56 +189,131 @@ export default function LandingPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
           >
-            <div className="phone-glow"></div>
+            <div className="hologram-glow"></div>
             <motion.div 
               className="phone"
               style={{ rotateX, rotateY }}
             >
               <div className="phone-notch"></div>
-              <div className="phone-header">
-                <div className="ph-greeting">GOOD MORNING</div>
-                <div className="ph-name">Sade Fashola</div>
+              
+              <div style={{ position: 'absolute', top: '10px', left: 0, right: 0, zIndex: 300, textAlign: 'center', pointerEvents: 'none' }}>
+                <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(255,255,255,0.8)', background: 'rgba(0,0,0,0.4)', padding: '2px 8px', borderRadius: '10px' }}>SWIPE TO CHANGE VIEW</span>
               </div>
-              <div className="phone-body">
-                <div className="balance-card">
-                  <div className="bal-label">TODAY'S INFLOW</div>
-                  <div className="bal-amount">₦38,500</div>
-                  <div className="bal-change">
-                    <i className="ti ti-trending-up" aria-hidden="true"></i>
-                    12% above yesterday
-                  </div>
-                </div>
-                <div className="score-pills">
-                  <div className="score-pill">
-                    <div className="sp-val brand">742</div>
-                    <div className="sp-lbl">Trust score</div>
-                  </div>
-                  <div className="score-pill">
-                    <div className="sp-val">Tier 2</div>
-                    <div className="sp-lbl">Loan access</div>
-                  </div>
-                  <div className="score-pill">
-                    <div className="sp-val green">0</div>
-                    <div className="sp-lbl">Defaults</div>
-                  </div>
-                </div>
-                <div className="p-section">RECENT TRANSACTIONS</div>
-                <div className="tx">
-                  <div className="tx-ico"><i className="ti ti-shopping-bag" aria-hidden="true"></i></div>
-                  <div><div className="tx-nm">Kemi Adeyemi</div><div className="tx-tm">10:34 AM</div></div>
-                  <div className="tx-av in">+₦8,000</div>
-                </div>
-                <div className="tx">
-                  <div className="tx-ico"><i className="ti ti-shopping-bag" aria-hidden="true"></i></div>
-                  <div><div className="tx-nm">Tunde Bakare</div><div className="tx-tm">9:15 AM</div></div>
-                  <div className="tx-av in">+₦12,500</div>
-                </div>
-                <div className="tx">
-                  <div className="tx-ico neutral"><i className="ti ti-credit-card" aria-hidden="true"></i></div>
-                  <div><div className="tx-nm">Auto repayment</div><div className="tx-tm">8:00 AM</div></div>
-                  <div className="tx-av out">-₦1,800</div>
-                </div>
-              </div>
+
+              <motion.div 
+                className="phone-view-container"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={1}
+                onDragEnd={handleDragEnd}
+              >
+                <AnimatePresence initial={false} custom={direction}>
+                  {views[viewIndex] === 'dashboard' && (
+                    <motion.div
+                      key="dashboard"
+                      custom={direction}
+                      variants={variants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                    >
+                      <div className="phone-header">
+                        <div className="ph-greeting">GOOD MORNING</div>
+                        <div className="ph-name">Sade Fashola</div>
+                      </div>
+                      <div className="phone-body">
+                        <div className="balance-card">
+                          <div className="bal-label">TODAY'S INFLOW</div>
+                          <div className="bal-amount">₦38,500</div>
+                          <div className="bal-change">
+                            <i className="ti ti-trending-up" aria-hidden="true"></i>
+                            12% above yesterday
+                          </div>
+                        </div>
+                        <div className="score-pills">
+                          <div className="score-pill">
+                            <div className="sp-val brand">742</div>
+                            <div className="sp-lbl">Trust score</div>
+                          </div>
+                          <div className="score-pill">
+                            <div className="sp-val">Tier 2</div>
+                            <div className="sp-lbl">Loan access</div>
+                          </div>
+                          <div className="score-pill">
+                            <div className="sp-val green">0</div>
+                            <div className="sp-lbl">Defaults</div>
+                          </div>
+                        </div>
+                        <div className="p-section">RECENT TRANSACTIONS</div>
+                        <div className="tx">
+                          <div className="tx-ico"><i className="ti ti-shopping-bag" aria-hidden="true"></i></div>
+                          <div><div className="tx-nm">Kemi Adeyemi</div><div className="tx-tm">10:34 AM</div></div>
+                          <div className="tx-av in">+₦8,000</div>
+                        </div>
+                        <div className="tx">
+                          <div className="tx-ico"><i className="ti ti-shopping-bag" aria-hidden="true"></i></div>
+                          <div><div className="tx-nm">Tunde Bakare</div><div className="tx-tm">9:15 AM</div></div>
+                          <div className="tx-av in">+₦12,500</div>
+                        </div>
+                        <div className="tx">
+                          <div className="tx-ico neutral"><i className="ti ti-credit-card" aria-hidden="true"></i></div>
+                          <div><div className="tx-nm">Auto repayment</div><div className="tx-tm">8:00 AM</div></div>
+                          <div className="tx-av out">-₦1,800</div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {views[viewIndex] === 'store' && (
+                    <motion.div
+                      key="store"
+                      custom={direction}
+                      variants={variants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#f9fafb' }}
+                    >
+                      <div className="store-header" style={{ paddingTop: '50px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '2px solid #f25c19', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px', fontSize: '18px', color: '#f25c19' }}>
+                          <i className="ti ti-building-store"></i>
+                        </div>
+                        <h3>Sade's Fabrics</h3>
+                        <p>Balogun Market, Lagos</p>
+                      </div>
+                      <div className="product-grid">
+                        <div className="product-card">
+                          <div className="product-img" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80)', backgroundSize: 'cover' }}></div>
+                          <div className="product-name">Ankara Premium</div>
+                          <div className="product-price">₦12,500</div>
+                          <button className="btn-buy">Buy Now</button>
+                        </div>
+                        <div className="product-card">
+                          <div className="product-img" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1574805728334-9ab440016666?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80)', backgroundSize: 'cover' }}></div>
+                          <div className="product-name">Silk Lace</div>
+                          <div className="product-price">₦8,000</div>
+                          <button className="btn-buy">Buy Now</button>
+                        </div>
+                        <div className="product-card">
+                          <div className="product-img" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1610419208034-7a9159930f4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80)', backgroundSize: 'cover' }}></div>
+                          <div className="product-name">Cotton Blend</div>
+                          <div className="product-price">₦5,500</div>
+                          <button className="btn-buy">Buy Now</button>
+                        </div>
+                        <div className="product-card">
+                          <div className="product-img" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1584916201218-f4242ceb4809?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80)', backgroundSize: 'cover' }}></div>
+                          <div className="product-name">George Fabric</div>
+                          <div className="product-price">₦22,000</div>
+                          <button className="btn-buy">Buy Now</button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
@@ -477,10 +595,9 @@ export default function LandingPage() {
       <footer>
         <div className="footer-top">
           <div className="footer-logo" onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6.5v5C4 16.1 7.4 20.7 12 22c4.6-1.3 8-5.9 8-10.5v-5L12 2z"/></svg>
-            </div>
-            <span className="footer-logo-name">Squad <span>Credit</span></span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="SquadCredit" width={34} height={34} style={{ flexShrink: 0 }} />
+            <span className="footer-logo-name">SquadCredit</span>
           </div>
           <div className="footer-links">
             <a href="#">Privacy policy</a>
