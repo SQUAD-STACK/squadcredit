@@ -28,34 +28,75 @@ export default async function SavingsPage() {
   return (
     <div style={{ paddingTop: "16px" }}>
 
-      {/* Balance hero */}
-      <div style={{ background: "linear-gradient(140deg, #FF7B4B 0%, #F25C19 50%, #E04B0D 100%)", borderRadius: "24px", padding: "24px", marginBottom: "14px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "140px", height: "140px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.12)", pointerEvents: "none" }} />
-        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", marginBottom: "6px" }}>
+      {/* Balance hero — flat orange */}
+      <div
+        style={{
+          backgroundColor: "#F25C19",
+          borderRadius: "24px",
+          padding: "28px 24px",
+          marginBottom: "14px",
+          position: "relative",
+          overflow: "hidden",
+          boxShadow: "0 1px 3px rgba(26,24,21,0.04), 0 12px 32px -12px rgba(242,92,25,0.18)",
+        }}
+      >
+        <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "160px", height: "160px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", pointerEvents: "none" }} />
+        <p style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)", marginBottom: "8px" }}>
           Total saved
         </p>
-        <p style={{ fontSize: "48px", fontWeight: 700, color: "#fff", letterSpacing: "-0.04em", lineHeight: 1, marginBottom: "8px", fontFeatureSettings: '"tnum"' }}>
+        <p
+          style={{
+
+            fontSize: "56px",
+            fontWeight: 700,
+            color: "#fff",
+            letterSpacing: "-0.02em",
+            lineHeight: 1,
+            marginBottom: "10px",
+            fontFeatureSettings: '"tnum"',
+          }}
+        >
           {formatNaira(balance)}
         </p>
-        <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", lineHeight: "18px" }}>
+        <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.65)", lineHeight: "18px" }}>
           Swept automatically from your daily payments
         </p>
       </div>
 
       {/* Savings rule */}
       <div style={{ backgroundColor: "#fff", borderRadius: "20px", padding: "20px", marginBottom: "14px", boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)" }}>
-        <p style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "#9ca3af", marginBottom: "14px" }}>
+        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "#9ca3af", marginBottom: "16px" }}>
           Active rule
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <div style={{ width: "52px", height: "52px", borderRadius: "16px", backgroundColor: "#fff4ef", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <span style={{ fontSize: "20px", fontWeight: 700, color: "#f25c19" }}>{rulePct}%</span>
+          <div
+            style={{
+              width: "52px",
+              height: "52px",
+              borderRadius: "16px",
+              backgroundColor: "#f3f4f6",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+    
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#111827",
+              }}
+            >
+              {rulePct}%
+            </span>
           </div>
           <div>
-            <p style={{ fontSize: "15px", fontWeight: 700, color: "#111827", marginBottom: "3px", letterSpacing: "-0.02em" }}>
+            <p style={{ fontSize: "15px", fontWeight: 600, color: "#111827", marginBottom: "3px", letterSpacing: "-0.02em" }}>
               {rulePct}% of payments above {formatNaira(ruleThreshold)}
             </p>
-            <p style={{ fontSize: "13px", color: "#6b7280", lineHeight: "18px" }}>
+            <p style={{ fontSize: "13px", color: "#9ca3af", lineHeight: "18px" }}>
               Auto-swept before it reaches your account
             </p>
           </div>
@@ -67,13 +108,23 @@ export default async function SavingsPage() {
         <div style={{ backgroundColor: "#fff", borderRadius: "20px", padding: "20px", marginBottom: "14px", boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
             <div>
-              <p style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "#9ca3af", marginBottom: "4px" }}>Saving for</p>
-              <p style={{ fontSize: "15px", fontWeight: 700, color: "#111827", letterSpacing: "-0.02em" }}>{goalLabel}</p>
+              <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "#9ca3af", marginBottom: "4px" }}>Saving for</p>
+              <p style={{ fontSize: "15px", fontWeight: 600, color: "#111827", letterSpacing: "-0.02em" }}>{goalLabel}</p>
             </div>
-            <span style={{ fontSize: "22px", fontWeight: 700, color: "#f25c19", letterSpacing: "-0.03em" }}>{goalPct}%</span>
+            <span
+              style={{
+    
+                fontSize: "22px",
+                fontWeight: 700,
+                color: "#111827",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {goalPct}%
+            </span>
           </div>
-          <div style={{ height: "6px", backgroundColor: "#f3f4f6", borderRadius: "99px", overflow: "hidden", marginBottom: "8px" }}>
-            <div style={{ height: "100%", width: `${goalPct}%`, backgroundColor: "#f25c19", borderRadius: "99px", transition: "width 0.5s ease" }} />
+          <div style={{ height: "4px", backgroundColor: "rgba(26,24,21,0.06)", borderRadius: "99px", overflow: "hidden", marginBottom: "10px" }}>
+            <div style={{ height: "100%", width: `${goalPct}%`, backgroundColor: "#059669", borderRadius: "99px", transition: "width 0.5s ease" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span style={{ fontSize: "12px", color: "#6b7280", fontWeight: 500 }}>{formatNaira(balance)} saved</span>
@@ -82,11 +133,26 @@ export default async function SavingsPage() {
         </div>
       ) : (
         <div style={{ backgroundColor: "#fff", borderRadius: "20px", padding: "20px", marginBottom: "14px", boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)" }}>
-          <p style={{ fontSize: "15px", fontWeight: 700, color: "#111827", marginBottom: "6px", letterSpacing: "-0.02em" }}>Set a savings goal</p>
-          <p style={{ fontSize: "13px", color: "#6b7280", lineHeight: "19px", marginBottom: "16px" }}>
+          <p style={{ fontSize: "15px", fontWeight: 600, color: "#111827", marginBottom: "6px", letterSpacing: "-0.02em" }}>Set a savings goal</p>
+          <p style={{ fontSize: "13px", color: "#9ca3af", lineHeight: "19px", marginBottom: "16px" }}>
             A second stall, new stock, school fees — set a target and track your progress as payments come in.
           </p>
-          <button disabled style={{ width: "100%", padding: "14px 20px", backgroundColor: "#f3f4f6", color: "#9ca3af", borderRadius: "12px", fontSize: "14px", fontWeight: 600, fontFamily: "inherit", border: "none", cursor: "not-allowed", textAlign: "center" }}>
+          <button
+            disabled
+            style={{
+              width: "100%",
+              padding: "14px 20px",
+              backgroundColor: "#f3f4f6",
+              color: "#9ca3af",
+              borderRadius: "12px",
+              fontSize: "14px",
+              fontWeight: 600,
+              fontFamily: "inherit",
+              border: "none",
+              cursor: "not-allowed",
+              textAlign: "center",
+            }}
+          >
             Set a goal (coming soon)
           </button>
         </div>
@@ -94,8 +160,8 @@ export default async function SavingsPage() {
 
       {/* How it works */}
       <div style={{ backgroundColor: "#fff", borderRadius: "20px", overflow: "hidden", boxShadow: "0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)" }}>
-        <div style={{ padding: "18px 20px", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-          <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#111827", letterSpacing: "-0.02em" }}>How it works</h2>
+        <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(26,24,21,0.05)" }}>
+          <h2 style={{ fontSize: "13px", fontWeight: 600, color: "#111827", letterSpacing: "0.02em", textTransform: "uppercase" }}>How it works</h2>
         </div>
 
         {[
@@ -103,13 +169,27 @@ export default async function SavingsPage() {
           { step: "2", title: `${rulePct}% goes to savings`, body: `If the payment is above ${formatNaira(ruleThreshold)}, we move ${rulePct}% to your savings wallet before you see the rest.` },
           { step: "3", title: "Rest lands in your account", body: "The remaining balance is yours immediately — no manual transfers." },
         ].map((item, i, arr) => (
-          <div key={item.step} style={{ display: "flex", gap: "14px", padding: "16px 20px", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.05)" : "none" }}>
-            <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#fff4ef", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "13px", fontWeight: 700, color: "#f25c19" }}>
+          <div key={item.step} style={{ display: "flex", gap: "14px", padding: "16px 20px", borderBottom: i < arr.length - 1 ? "1px solid rgba(26,24,21,0.05)" : "none" }}>
+            <div
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                backgroundColor: "#f3f4f6",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                fontSize: "12px",
+                fontWeight: 700,
+                color: "#6b7280",
+              }}
+            >
               {item.step}
             </div>
             <div>
-              <p style={{ fontSize: "14px", fontWeight: 700, color: "#111827", marginBottom: "3px", letterSpacing: "-0.01em" }}>{item.title}</p>
-              <p style={{ fontSize: "13px", color: "#6b7280", lineHeight: "18px" }}>{item.body}</p>
+              <p style={{ fontSize: "14px", fontWeight: 600, color: "#111827", marginBottom: "3px", letterSpacing: "-0.01em" }}>{item.title}</p>
+              <p style={{ fontSize: "13px", color: "#9ca3af", lineHeight: "18px" }}>{item.body}</p>
             </div>
           </div>
         ))}

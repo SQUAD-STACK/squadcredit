@@ -30,6 +30,9 @@ export interface Database {
           total_inflows: number;
           lifetime_saved: number;
           active_loan_balance: number;
+          disbursement_bank_code: string | null;
+          disbursement_account_number: string | null;
+          disbursement_account_name: string | null;
           kyc_status: "pending" | "in_progress" | "verified" | "rejected";
           created_at: string;
         };
@@ -44,6 +47,9 @@ export interface Database {
           total_inflows?: number;
           lifetime_saved?: number;
           active_loan_balance?: number;
+          disbursement_bank_code?: string | null;
+          disbursement_account_number?: string | null;
+          disbursement_account_name?: string | null;
           kyc_status?: "pending" | "in_progress" | "verified" | "rejected";
         };
         Update: Partial<Database["public"]["Tables"]["traders"]["Insert"]>;
@@ -77,7 +83,7 @@ export interface Database {
           amount_repaid: number;
           holdback_percentage: number;
           tier: number;
-          status: "active" | "repaid" | "overdue" | "defaulted";
+          status: "pending" | "active" | "repaid" | "overdue" | "defaulted" | "failed";
           disbursed_at: string;
           due_at: string;
           repaid_at: string | null;
@@ -85,8 +91,14 @@ export interface Database {
         };
         Insert: Omit<
           Database["public"]["Tables"]["loans"]["Row"],
-          "id" | "amount_repaid"
-        > & { id?: string; amount_repaid?: number };
+          "id" | "amount_repaid" | "disbursed_at" | "due_at" | "squad_payout_reference"
+        > & {
+          id?: string;
+          amount_repaid?: number;
+          disbursed_at?: string;
+          due_at?: string;
+          squad_payout_reference?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["loans"]["Insert"]>;
       };
       savings: {

@@ -37,7 +37,7 @@ export default async function DashboardPage({
       .select("*")
       .eq("trader_id", traderId)
       .order("transaction_date", { ascending: false })
-      .limit(20),
+      .limit(5),
     supabase
       .from("loans")
       .select("*")

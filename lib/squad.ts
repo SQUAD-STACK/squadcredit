@@ -1,27 +1,19 @@
+import crypto from "crypto";
 import { nairaToKobo } from "./format";
 
 const BASE_URL = process.env.SQUAD_API_BASE_URL!;
 const SECRET_KEY = process.env.SQUAD_SECRET_KEY!;
-const MERCHANT_ID = "SBK9CS1TJ5";
+const MERCHANT_ID = "SB8644AAYV";
 
 function assertSquadConfig() {
-  if (!BASE_URL) {
-    throw new Error("SQUAD_API_BASE_URL is missing.");
-  }
-
-  if (!SECRET_KEY) {
-    throw new Error("SQUAD_SECRET_KEY is missing.");
-  }
-
+  if (!BASE_URL) throw new Error("SQUAD_API_BASE_URL is missing.");
+  if (!SECRET_KEY) throw new Error("SQUAD_SECRET_KEY is missing.");
   if (!SECRET_KEY.startsWith("sandbox_sk_")) {
     throw new Error("SQUAD_SECRET_KEY must be a Squad sandbox secret key that starts with sandbox_sk_.");
   }
 }
 
-async function squadFetch<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function squadFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   assertSquadConfig();
 
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -36,13 +28,13 @@ async function squadFetch<T>(
   const json = await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(
-      `Squad API ${res.status} on ${path}: ${JSON.stringify(json)}`
-    );
+    throw new Error(`Squad API ${res.status} on ${path}: ${JSON.stringify(json)}`);
   }
 
   return json;
 }
+
+// ── Virtual Accounts ──────────────────────────────────────────────────────────
 
 export interface CreateVirtualAccountParams {
   customer_identifier: string;
@@ -50,10 +42,10 @@ export interface CreateVirtualAccountParams {
   last_name: string;
   middle_name?: string;
   mobile_num: string;
-  dob: string; // mm/dd/yyyy
+  dob: string; // DD/MM/YYYY
   email: string;
   bvn: string;
-  gender: "1" | "2";
+  gender: "1" | "2"; // 1 = male, 2 = female
   address: string;
   beneficiary_account?: string;
 }
@@ -84,6 +76,9 @@ export async function createVirtualAccount(
 export interface SimulatePaymentParams {
   virtual_account_number: string;
   amount: string; // naira as string
+  sender_name: string;
+  sender_account_number: string;
+  sender_bank_code: string;
 }
 
 export async function simulatePayment(
@@ -95,35 +90,30 @@ export async function simulatePayment(
   });
 }
 
-export interface AccountLookupParams {
-  bank_code: string; // NIP 6-digit code
-  account_number: string;
-}
+// ── Payouts ───────────────────────────────────────────────────────────────────
 
 export interface AccountLookupResponse {
   status: number;
   success: boolean;
+  message: string;
   data: {
     account_name: string;
     account_number: string;
-  };
+  } | null;
 }
 
-export async function lookupAccount(
-  params: AccountLookupParams
-): Promise<AccountLookupResponse> {
-  return squadFetch("/payout/account/lookup", {
+export async function lookupAccount(params: {
+  bank_code: string;
+  account_number: string;
+}): Promise<{ accountName: string; accountNumber: string }> {
+  const res = await squadFetch<AccountLookupResponse>("/payout/account/lookup", {
     method: "POST",
     body: JSON.stringify(params),
   });
-}
-
-export interface TransferParams {
-  loan_id: string;
-  amount_naira: number;
-  bank_code: string; // NIP 6-digit code
-  account_number: string;
-  account_name: string;
+  if (!res.data?.account_name) {
+    throw new Error(res.message || "Account not found");
+  }
+  return { accountName: res.data.account_name, accountNumber: res.data.account_number };
 }
 
 export interface TransferResponse {
@@ -141,35 +131,63 @@ export interface TransferResponse {
   };
 }
 
-export async function disburseLoan(
-  params: TransferParams
-): Promise<TransferResponse> {
-  const transaction_reference = `${MERCHANT_ID}_loan_${params.loan_id}`;
-
-  return squadFetch("/payout/transfer", {
+export async function requeryTransfer(transactionReference: string): Promise<TransferResponse> {
+  return squadFetch<TransferResponse>("/payout/requery", {
     method: "POST",
-    body: JSON.stringify({
-      transaction_reference,
-      amount: nairaToKobo(params.amount_naira),
-      bank_code: params.bank_code,
-      currency_id: "NGN",
-      account_number: params.account_number,
-      account_name: params.account_name,
-      remark: "SquadCredit advance",
-    }),
+    body: JSON.stringify({ transaction_reference: transactionReference }),
   });
 }
 
-export async function requeryTransfer(
-  transaction_reference: string
-): Promise<TransferResponse> {
-  return squadFetch("/payout/requery", {
-    method: "POST",
-    body: JSON.stringify({ transaction_reference }),
-  });
+export async function disburseLoan(params: {
+  loanId: string;
+  amount: string; // already in kobo as string
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
+}): Promise<TransferResponse["data"]> {
+  const transaction_reference = `${MERCHANT_ID}_${params.loanId.replace(/-/g, "")}`;
+  let res: TransferResponse;
+
+  try {
+    res = await squadFetch<TransferResponse>("/payout/transfer", {
+      method: "POST",
+      body: JSON.stringify({
+        transaction_reference,
+        amount: params.amount,
+        bank_code: params.bankCode,
+        currency_id: "NGN",
+        account_number: params.accountNumber,
+        account_name: params.accountName,
+        remark: transaction_reference,
+      }),
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("424")) {
+      res = await requeryTransfer(transaction_reference);
+    } else {
+      throw err;
+    }
+  }
+
+  if (!res.data?.nip_transaction_reference) {
+    throw Object.assign(new Error("WALLET_PENDING"), { code: "WALLET_PENDING" });
+  }
+  return res.data;
 }
 
-import crypto from "crypto";
+export interface LedgerBalanceResponse {
+  status: number;
+  success: boolean;
+  data: { balance: number; currency: string };
+}
+
+export async function getLedgerBalance(): Promise<number> {
+  const res = await squadFetch<LedgerBalanceResponse>("/payout/balance");
+  return res.data.balance;
+}
+
+// ── Webhook verification ──────────────────────────────────────────────────────
 
 export interface SquadWebhookPayload {
   transaction_reference: string;
@@ -225,3 +243,6 @@ export function verifySquadSignature(
     return false;
   }
 }
+
+// Keep nairaToKobo re-export for any callers that import from here
+export { nairaToKobo };
