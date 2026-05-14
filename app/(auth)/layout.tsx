@@ -31,7 +31,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             </span>
           </div>
           <span style={{ fontSize: "16px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em" }}>
-            SquadCredit
+            Squad <span style={{ color: "#f25c19" }}>Credit</span>
           </span>
         </div>
 

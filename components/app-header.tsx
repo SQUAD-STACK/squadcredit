@@ -54,7 +54,7 @@ export default function AppHeader() {
               letterSpacing: "-0.025em",
             }}
           >
-            SquadCredit
+            Squad <span style={{ color: "#f25c19" }}>Credit</span>
           </span>
         </Link>
 
