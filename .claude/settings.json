@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(winget install *)",
-      "Bash(ngrok update *)"
+      "Bash(ngrok update *)",
+      "WebFetch(domain:docs.squadco.com)",
+      "WebFetch(domain:squadco.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }

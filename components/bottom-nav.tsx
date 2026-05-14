@@ -26,9 +26,10 @@ export default function BottomNav() {
         alignItems: "center",
         justifyContent: "space-around",
         padding: "0 8px",
-        backgroundColor: "#fff",
-        borderTop: "1px solid rgba(0,0,0,0.06)",
-        boxShadow: "0 -4px 20px rgba(0,0,0,0.05)",
+        backgroundColor: "rgba(250, 250, 247, 0.85)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderTop: "1px solid rgba(26,24,21,0.06)",
         zIndex: 30,
       }}
     >
@@ -44,11 +45,11 @@ export default function BottomNav() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "4px",
+              gap: "3px",
               flex: 1,
               padding: "8px 0",
               textDecoration: "none",
-              color: active ? "#f25c19" : "#9ca3af",
+              color: active ? "#f25c19" : "rgba(26,24,21,0.6)",
               borderRadius: "12px",
               transition: "color 0.15s ease",
               position: "relative",
@@ -58,13 +59,13 @@ export default function BottomNav() {
               <span
                 style={{
                   position: "absolute",
-                  top: "2px",
+                  top: "0px",
                   left: "50%",
                   transform: "translateX(-50%)",
-                  width: "20px",
+                  width: "2px",
                   height: "3px",
                   backgroundColor: "#f25c19",
-                  borderRadius: "0 0 3px 3px",
+                  borderRadius: "0 0 2px 2px",
                 }}
               />
             )}

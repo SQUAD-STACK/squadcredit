@@ -20,13 +20,13 @@ function greeting(): string {
   return "Good evening";
 }
 
-/* ── Shared ATM card chrome ── */
+/* ── Shared card chrome — flat orange, brand-tinted shadow ── */
 
 function AtmCard({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        background: "linear-gradient(140deg, #FF7B4B 0%, #F25C19 50%, #E04B0D 100%)",
+        backgroundColor: "#F25C19",
         borderRadius: "24px",
         padding: "24px",
         position: "relative",
@@ -35,29 +35,31 @@ function AtmCard({ children }: { children: React.ReactNode }) {
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
+        boxShadow: "0 1px 3px rgba(26,24,21,0.04), 0 12px 32px -12px rgba(242,92,25,0.18)",
       }}
     >
+      {/* Subtle ring decorations — monochrome, not gradient */}
       <div
         style={{
           position: "absolute",
-          top: "-40px",
-          right: "-40px",
+          top: "-50px",
+          right: "-50px",
           width: "160px",
           height: "160px",
           borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.12)",
+          border: "1px solid rgba(255,255,255,0.1)",
           pointerEvents: "none",
         }}
       />
       <div
         style={{
           position: "absolute",
-          top: "-10px",
-          right: "-10px",
-          width: "90px",
-          height: "90px",
+          top: "-16px",
+          right: "-16px",
+          width: "88px",
+          height: "88px",
           borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid rgba(255,255,255,0.07)",
           pointerEvents: "none",
         }}
       />
@@ -73,28 +75,28 @@ function CardTopRow({ firstName }: { firstName: string }) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: "28px",
+        marginBottom: "24px",
       }}
     >
       <div>
-        <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "13px", fontWeight: 500, marginBottom: "2px" }}>
+        <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px", fontWeight: 400, marginBottom: "1px" }}>
           {greeting()}
         </p>
-        <p style={{ color: "#fff", fontSize: "17px", fontWeight: 700, letterSpacing: "-0.02em" }}>
+        <p style={{ color: "#fff", fontSize: "16px", fontWeight: 600, letterSpacing: "-0.02em" }}>
           {firstName}
         </p>
       </div>
       <div
         style={{
-          width: "42px",
-          height: "42px",
+          width: "38px",
+          height: "38px",
           borderRadius: "50%",
-          backgroundColor: "rgba(255,255,255,0.22)",
+          backgroundColor: "rgba(255,255,255,0.18)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           color: "#fff",
-          fontSize: "16px",
+          fontSize: "14px",
           fontWeight: 700,
           flexShrink: 0,
         }}
@@ -109,12 +111,12 @@ function CardLabel({ children }: { children: React.ReactNode }) {
   return (
     <p
       style={{
-        color: "rgba(255,255,255,0.6)",
+        color: "rgba(255,255,255,0.55)",
         fontSize: "11px",
-        fontWeight: 600,
-        letterSpacing: "0.08em",
+        fontWeight: 500,
+        letterSpacing: "0.06em",
         textTransform: "uppercase",
-        marginBottom: "4px",
+        marginBottom: "6px",
       }}
     >
       {children}
@@ -140,34 +142,14 @@ function WalletCard({
       <AnimatedAmount value={walletBalance} />
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-        <div style={{ marginTop: "18px" }}>
-          <button
-            onClick={() => {}}
-            style={{
-              backgroundColor: "rgba(255,255,255,0.92)",
-              color: "#f25c19",
-              border: "none",
-              borderRadius: "99px",
-              padding: "8px 18px",
-              fontSize: "13px",
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "inherit",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Send to my bank
-          </button>
-        </div>
-
         <div
           style={{
             marginTop: "20px",
-            paddingTop: "16px",
-            borderTop: "1px solid rgba(255,255,255,0.18)",
+            paddingTop: "14px",
+            borderTop: "1px solid rgba(255,255,255,0.15)",
           }}
         >
-          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px", fontWeight: 400 }}>
+          <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "12px", fontWeight: 400 }}>
             Total earned: {formatNaira(totalInflows)}
           </p>
         </div>
@@ -197,8 +179,8 @@ function CreditCard({
         <div
           style={{
             marginTop: "auto",
-            paddingTop: "18px",
-            borderTop: "1px solid rgba(255,255,255,0.18)",
+            paddingTop: "14px",
+            borderTop: "1px solid rgba(255,255,255,0.15)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -207,8 +189,8 @@ function CreditCard({
           <p
             style={{
               fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
-              color: "rgba(255,255,255,0.75)",
-              fontSize: "13px",
+              color: "rgba(255,255,255,0.65)",
+              fontSize: "12px",
               letterSpacing: "0.08em",
               fontFeatureSettings: '"tnum"',
             }}
@@ -217,11 +199,11 @@ function CreditCard({
           </p>
           <span
             style={{
-              backgroundColor: "rgba(255,255,255,0.18)",
+              backgroundColor: "rgba(255,255,255,0.15)",
               color: "#fff",
-              fontSize: "11px",
+              fontSize: "10px",
               fontWeight: 600,
-              padding: "4px 12px",
+              padding: "3px 10px",
               borderRadius: "99px",
               letterSpacing: "0.03em",
             }}
@@ -260,12 +242,12 @@ function NubanCard({
         style={{
           fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
           color: "#fff",
-          fontSize: "30px",
-          fontWeight: 700,
-          letterSpacing: "0.06em",
+          fontSize: "26px",
+          fontWeight: 600,
+          letterSpacing: "0.08em",
           fontFeatureSettings: '"tnum"',
           lineHeight: 1,
-          marginBottom: "12px",
+          marginBottom: "10px",
         }}
       >
         {virtualAccountNumber || "—"}
@@ -274,11 +256,11 @@ function NubanCard({
       <span
         style={{
           display: "inline-block",
-          backgroundColor: "rgba(255,255,255,0.18)",
+          backgroundColor: "rgba(255,255,255,0.15)",
           color: "#fff",
-          fontSize: "11px",
+          fontSize: "10px",
           fontWeight: 600,
-          padding: "4px 12px",
+          padding: "3px 10px",
           borderRadius: "99px",
           letterSpacing: "0.03em",
         }}
@@ -286,7 +268,7 @@ function NubanCard({
         GTBank
       </span>
 
-      <div style={{ marginTop: "auto", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.18)" }}>
+      <div style={{ marginTop: "auto", paddingTop: "14px", borderTop: "1px solid rgba(255,255,255,0.15)" }}>
         <button
           onClick={copy}
           style={{
@@ -294,7 +276,7 @@ function NubanCard({
             color: copied ? "#059669" : "#f25c19",
             border: "none",
             borderRadius: "99px",
-            padding: "8px 18px",
+            padding: "7px 16px",
             fontSize: "13px",
             fontWeight: 600,
             cursor: "pointer",
@@ -310,7 +292,7 @@ function NubanCard({
   );
 }
 
-/* ── Animated big number ── */
+/* ── Animated hero number — Instrument Serif ── */
 
 function AnimatedAmount({ value }: { value: number }) {
   const spanRef = useRef<HTMLSpanElement>(null);
@@ -333,7 +315,7 @@ function AnimatedAmount({ value }: { value: number }) {
     <span
       ref={spanRef}
       style={{
-        fontSize: "44px",
+        fontSize: "52px",
         fontWeight: 700,
         color: "#fff",
         letterSpacing: "-0.04em",
@@ -356,11 +338,12 @@ export default function DashboardCarousel({
   virtualAccountNumber,
 }: DashboardCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "center",
+    align: "start",
     containScroll: "trimSnaps",
     startIndex: 0,
   });
   const [selectedSnap, setSelectedSnap] = useState(0);
+  const [copied, setCopied] = useState(false);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -374,30 +357,32 @@ export default function DashboardCarousel({
     return () => { emblaApi.off("select", onSelect); };
   }, [emblaApi, onSelect]);
 
+  const handleShareNumber = () => {
+    navigator.clipboard.writeText(virtualAccountNumber);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div>
-      <div ref={emblaRef} style={{ overflow: "hidden" }}>
-        <div style={{ display: "flex", alignItems: "stretch" }}>
-          <div style={{ flex: "0 0 100%", minWidth: 0 }}>
-            <WalletCard
-              firstName={firstName}
-              walletBalance={walletBalance}
-              totalInflows={totalInflows}
-            />
-          </div>
-          <div style={{ flex: "0 0 100%", minWidth: 0 }}>
-            <CreditCard
-              firstName={firstName}
-              creditLimit={creditLimit}
-              virtualAccountNumber={virtualAccountNumber}
-            />
-          </div>
-          <div style={{ flex: "0 0 100%", minWidth: 0 }}>
-            <NubanCard
-              firstName={firstName}
-              virtualAccountNumber={virtualAccountNumber}
-            />
-          </div>
+      {/* Carousel viewport — overflow hidden so peek is clipped */}
+      <div ref={emblaRef} style={{ overflow: "hidden", marginRight: "-20px" }}>
+        <div style={{ display: "flex", gap: "12px", alignItems: "stretch" }}>
+          {[
+            <WalletCard key="wallet" firstName={firstName} walletBalance={walletBalance} totalInflows={totalInflows} />,
+            <CreditCard key="credit" firstName={firstName} creditLimit={creditLimit} virtualAccountNumber={virtualAccountNumber} />,
+            <NubanCard key="nuban" firstName={firstName} virtualAccountNumber={virtualAccountNumber} />,
+          ].map((card, i) => (
+            <div
+              key={i}
+              style={{
+                flex: "0 0 calc(100% - 32px)",
+                minWidth: 0,
+              }}
+            >
+              {card}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -405,9 +390,10 @@ export default function DashboardCarousel({
       <div
         style={{
           display: "flex",
-          gap: "6px",
+          gap: "5px",
           justifyContent: "center",
           marginTop: "12px",
+          marginBottom: "4px",
         }}
       >
         {[0, 1, 2].map((i) => (
@@ -415,18 +401,59 @@ export default function DashboardCarousel({
             key={i}
             onClick={() => emblaApi?.scrollTo(i)}
             style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              backgroundColor: "#f25c19",
-              opacity: i === selectedSnap ? 1 : 0.3,
+              width: i === selectedSnap ? 16 : 6,
+              height: 6,
+              borderRadius: "99px",
+              backgroundColor: i === selectedSnap ? "#f25c19" : "rgba(26,24,21,0.16)",
               border: "none",
               cursor: "pointer",
               padding: 0,
-              transition: "opacity 0.2s ease",
+              transition: "all 0.25s ease",
             }}
           />
         ))}
+      </div>
+
+      {/* Quick action row */}
+      <div style={{ display: "flex", gap: "12px", marginTop: "14px" }}>
+        <button
+          onClick={() => {}}
+          style={{
+            flex: 1,
+            height: "44px",
+            borderRadius: "99px",
+            backgroundColor: "#fff",
+            border: "1.5px solid #f25c19",
+            color: "#f25c19",
+            fontSize: "14px",
+            fontWeight: 600,
+            fontFamily: "inherit",
+            cursor: "pointer",
+            letterSpacing: "-0.01em",
+            transition: "background-color 0.15s ease",
+          }}
+        >
+          Withdraw
+        </button>
+        <button
+          onClick={handleShareNumber}
+          style={{
+            flex: 1,
+            height: "44px",
+            borderRadius: "99px",
+            backgroundColor: "#f3f4f6",
+            border: "none",
+            color: copied ? "#059669" : "#374151",
+            fontSize: "14px",
+            fontWeight: 600,
+            fontFamily: "inherit",
+            cursor: "pointer",
+            letterSpacing: "-0.01em",
+            transition: "color 0.15s ease",
+          }}
+        >
+          {copied ? "Copied!" : "Share number"}
+        </button>
       </div>
     </div>
   );
