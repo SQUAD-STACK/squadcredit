@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono, Instrument_Serif } from "next/font/google";
+import SwRegister from "@/components/sw-register";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -31,6 +32,10 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "SquadCredit",
   },
+  icons: {
+    apple: "/api/pwa-icon/180",
+    icon: "/api/pwa-icon/192",
+  },
 };
 
 export const viewport: Viewport = {
@@ -49,6 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${dmSans.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}>
+        <SwRegister />
         {children}
       </body>
     </html>

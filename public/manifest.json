@@ -3,20 +3,23 @@
   "short_name": "SquadCredit",
   "description": "Cash-flow credit and savings for market traders",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#FAFAF7",
   "theme_color": "#F25C19",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/api/pwa-icon/192",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/api/pwa-icon/512",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
