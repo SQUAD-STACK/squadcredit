@@ -38,29 +38,14 @@ export default function AppHeader() {
             textDecoration: "none",
           }}
         >
-          <div
-            style={{
-              width: "34px",
-              height: "34px",
-              borderRadius: "10px",
-              backgroundColor: "#f25c19",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <span
-              style={{
-                fontSize: "13px",
-                fontWeight: 700,
-                color: "#fff",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              SC
-            </span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.svg"
+            alt="SquadCredit"
+            width={34}
+            height={34}
+            style={{ flexShrink: 0 }}
+          />
           <span
             style={{
               fontSize: "16px",
