@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono, Instrument_Serif } from "next/font/google";
 import SwRegister from "@/components/sw-register";
+import SplashScreen from "@/components/splash-screen";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -55,6 +56,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${dmSans.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}>
         <SwRegister />
+        <SplashScreen />
         {children}
       </body>
     </html>

@@ -21,7 +21,8 @@ function tierLabel(score: number): string {
 
 function ringColor(score: number): string {
   if (score >= 675) return "#059669";
-  if (score >= 400) return "#f25c19";
+  if (score >= 575) return "#f25c19";
+  if (score >= 400) return "#E91E63";
   return "#d1d5db";
 }
 
