@@ -83,9 +83,9 @@ function TierCard({
   // Use template strings to construct the gradient using motion values
   const bgGradient = useTransform(
     [mouseXSpring, mouseYSpring],
-    ([xVal, yVal]: [number, number]) => {
-      const px = (xVal + 0.5) * 100;
-      const py = (yVal + 0.5) * 100;
+    (input: number[]) => {
+      const px = ((input[0] ?? 0) + 0.5) * 100;
+      const py = ((input[1] ?? 0) + 0.5) * 100;
       return `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.15) 0%, transparent 60%)`;
     }
   );
