@@ -291,8 +291,8 @@ export default function BorrowClient({
             const current = tier.tier === t.tier;
             return (
               <div key={t.tier} style={{ flex: 1 }}>
-                <div style={{ height: "3px", borderRadius: "99px", marginBottom: "8px", backgroundColor: current ? "#111827" : unlocked ? "#059669" : "#f3f4f6" }} />
-                <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase", color: current ? "#111827" : unlocked ? "#059669" : "#d1d5db", marginBottom: "2px" }}>
+                <div style={{ height: "3px", borderRadius: "99px", marginBottom: "8px", backgroundColor: current ? "#111827" : unlocked ? "#E91E63" : "#f3f4f6" }} />
+                <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase", color: current ? "#111827" : unlocked ? "#E91E63" : "#d1d5db", marginBottom: "2px" }}>
                   {t.name}
                 </p>
                 <p style={{ fontSize: "10px", color: current ? "#6b7280" : unlocked ? "#9ca3af" : "#d1d5db" }}>
