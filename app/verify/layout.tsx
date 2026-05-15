@@ -75,7 +75,7 @@ export default function VerifyLayout({
                 fontFamily: "inherit",
               }}
             >
-              SquadCredit
+              Squad <span style={{ color: "#f25c19" }}>Credit</span>
             </p>
             <p
               style={{

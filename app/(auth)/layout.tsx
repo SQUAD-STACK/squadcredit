@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.svg" alt="SquadCredit" width={34} height={34} style={{ flexShrink: 0 }} />
           <span style={{ fontSize: "16px", fontWeight: 700, color: "#111827", letterSpacing: "-0.025em" }}>
-            SquadCredit
+            Squad <span style={{ color: "#f25c19" }}>Credit</span>
           </span>
         </div>
 

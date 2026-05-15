@@ -77,10 +77,6 @@ export default function TransactionFeed({ transactions }: { transactions: Transa
   );
 }
 
-function toSentenceCase(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
-
 function TransactionRow({ transaction, isLast }: { transaction: Transaction; isLast: boolean }) {
   const parts = transaction.sender_name.trim().split(/\s+/);
   const initials = parts
