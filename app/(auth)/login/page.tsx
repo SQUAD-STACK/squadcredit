@@ -176,7 +176,7 @@ export default function LoginPage() {
       </form>
       
       <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '13.5px', color: '#6b7280' }}>
-        Don't have an account? <span onClick={() => router.push('/onboard')} style={{ color: '#FF6B00', fontWeight: 500, cursor: 'pointer' }}>Create one</span>
+        Don&apos;t have an account? <span onClick={() => router.push('/onboard')} style={{ color: '#FF6B00', fontWeight: 500, cursor: 'pointer' }}>Create one</span>
       </div>
     </motion.div>
   );

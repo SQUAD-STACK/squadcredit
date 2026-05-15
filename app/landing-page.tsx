@@ -1,21 +1,21 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion, useMotionValue, useSpring, useTransform, useScroll, AnimatePresence, PanInfo } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, useScroll, AnimatePresence, PanInfo, Variants } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import './landing.css';
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
 };
 
-const fadeLeft = {
+const fadeLeft: Variants = {
   hidden: { opacity: 0, x: -40 },
   visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -115,7 +115,7 @@ export default function LandingPage() {
     return () => clearInterval(avatarTimer);
   }, []);
 
-  const handleDragEnd = (e: any, { offset, velocity }: PanInfo) => {
+  const handleDragEnd = (e: unknown, { offset, velocity }: PanInfo) => {
     const swipe = offset.x;
     if (swipe < -50) {
       setDirection(1);
@@ -142,7 +142,7 @@ export default function LandingPage() {
     return () => clearInterval(dashTimer);
   }, []);
 
-  const handleDashDragEnd = (e: any, { offset, velocity }: PanInfo) => {
+  const handleDashDragEnd = (e: unknown, { offset, velocity }: PanInfo) => {
     const swipe = offset.x;
     if (swipe < -30) {
       setDashDirection(1);
@@ -153,7 +153,7 @@ export default function LandingPage() {
     }
   };
 
-  const variants = {
+  const variants: Variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 100 : -100,
       opacity: 0,
@@ -313,7 +313,7 @@ export default function LandingPage() {
                                   style={{ position: 'absolute', width: '100%', height: '100%' }}
                                 >
                                   <div className="balance-card" style={{ height: '100%', marginBottom: 0 }}>
-                                    <div className="bal-label">TODAY'S INFLOW</div>
+                                    <div className="bal-label">TODAY&apos;S INFLOW</div>
                                     <div className="bal-amount">₦38,500</div>
                                     <div className="bal-change">
                                       <i className="ti ti-trending-up" aria-hidden="true"></i>
@@ -609,9 +609,9 @@ export default function LandingPage() {
                 </marker>
               </defs>
               {/* S-curve from Step 1 to Step 2 */}
-              <path d="M 250,180 C 320,280 380,80 450,100" fill="none" stroke="var(--brand)" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" marker-end="url(#arrow)" />
+              <path d="M 250,180 C 320,280 380,80 450,100" fill="none" stroke="var(--brand)" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" markerEnd="url(#arrow)" />
               {/* S-curve from Step 2 to Step 3 */}
-              <path d="M 550,100 C 620,120 680,280 750,180" fill="none" stroke="var(--brand)" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" marker-end="url(#arrow)" />
+              <path d="M 550,100 C 620,120 680,280 750,180" fill="none" stroke="var(--brand)" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" markerEnd="url(#arrow)" />
             </svg>
           </div>
           
@@ -687,7 +687,7 @@ export default function LandingPage() {
             </div>
             <div className="how-text">
               <div className="how-title">Build your trust score</div>
-              <div className="how-body">Our AI reads your inflow patterns — regularity, customer spread, growth trend, and your traders' network. Within three weeks you may already qualify for your first loan.</div>
+              <div className="how-body">Our AI reads your inflow patterns — regularity, customer spread, growth trend, and your traders&apos; network. Within three weeks you may already qualify for your first loan.</div>
             </div>
           </motion.div>
           
@@ -723,7 +723,7 @@ export default function LandingPage() {
         >
           <motion.div className="sec-eyebrow" variants={fadeUp}>Why Squad Credit</motion.div>
           <motion.div className="sec-title" variants={fadeUp}>We own the rail — so you own the trust</motion.div>
-          <motion.div className="sec-sub" variants={fadeUp}>We don't scrape your contacts. We don't call your family. Repayment happens before you even think about it.</motion.div>
+          <motion.div className="sec-sub" variants={fadeUp}>We don&apos;t scrape your contacts. We don&apos;t call your family. Repayment happens before you even think about it.</motion.div>
         </motion.div>
         <motion.div 
           className="feat-grid"
@@ -840,7 +840,7 @@ export default function LandingPage() {
             <div className="testi-stars">
               <i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i>
             </div>
-            <div className="testi-quote">"Before Squad Credit, I bought half the stock I needed and watched customers walk to the next stall. Now I stock up on Monday and my loan is paid off by Friday."</div>
+            <div className="testi-quote">&quot;Before Squad Credit, I bought half the stock I needed and watched customers walk to the next stall. Now I stock up on Monday and my loan is paid off by Friday.&quot;</div>
             <div className="testi-author">
               <div className="testi-avatar">SF</div>
               <div>
@@ -853,7 +853,7 @@ export default function LandingPage() {
             <div className="testi-stars">
               <i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i>
             </div>
-            <div className="testi-quote">"My trust score hit 800 after three months. They sent ₦150,000 straight to my account. Not one call to my contacts. Not one threatening message. This is how lending should work."</div>
+            <div className="testi-quote">&quot;My trust score hit 800 after three months. They sent ₦150,000 straight to my account. Not one call to my contacts. Not one threatening message. This is how lending should work.&quot;</div>
             <div className="testi-author">
               <div className="testi-avatar">EO</div>
               <div>
@@ -866,7 +866,7 @@ export default function LandingPage() {
             <div className="testi-stars">
               <i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i><i className="ti ti-star" aria-hidden="true"></i>
             </div>
-            <div className="testi-quote">"As MTA chairman I see every member's activity on one dashboard. When someone falls behind, I step in early. The chairman bonus alone makes this worth promoting."</div>
+            <div className="testi-quote">&quot;As MTA chairman I see every member&apos;s activity on one dashboard. When someone falls behind, I step in early. The chairman bonus alone makes this worth promoting.&quot;</div>
             <div className="testi-author">
               <div className="testi-avatar">AO</div>
               <div>
@@ -889,7 +889,7 @@ export default function LandingPage() {
           <div className="assoc-left">
             <div className="assoc-eyebrow">For market associations</div>
             <div className="assoc-title">Your association is our distribution engine</div>
-            <div className="assoc-body">Every major Nigerian market has a union. We plug into it. Your chairman gets a dashboard showing all members' activity, earns a 0.5% bonus on disbursements, and has the tools to mediate before anyone falls behind.</div>
+            <div className="assoc-body">Every major Nigerian market has a union. We plug into it. Your chairman gets a dashboard showing all members&apos; activity, earns a 0.5% bonus on disbursements, and has the tools to mediate before anyone falls behind.</div>
             <button className="btn-assoc" onClick={() => router.push('/login')}>
               Partner with us
               <i className="ti ti-arrow-right" aria-hidden="true"></i>
