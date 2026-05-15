@@ -61,6 +61,112 @@ function AnimatedCounter({ value, prefix = '', suffix = '' }: { value: number; p
   return <div ref={ref} className="hero-stat-val">{prefix}{count}{suffix}</div>;
 }
 
+function TierCard({ 
+  level, name, range, days, fee, features, 
+  isHero = false, scoreReq = 0, scoreCurrent = 0, 
+  isLocked = false 
+}: { 
+  level: string; name: string; range: string; days: string; fee: string; 
+  features: string[]; isHero?: boolean; scoreReq?: number; scoreCurrent?: number; 
+  isLocked?: boolean 
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["6deg", "-6deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-6deg", "6deg"]);
+  
+  // Use template strings to construct the gradient using motion values
+  const bgGradient = useTransform(
+    [mouseXSpring, mouseYSpring],
+    ([xVal, yVal]: [number, number]) => {
+      const px = (xVal + 0.5) * 100;
+      const py = (yVal + 0.5) * 100;
+      return `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.15) 0%, transparent 60%)`;
+    }
+  );
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  const progress = Math.min(100, Math.max(0, (scoreCurrent / scoreReq) * 100));
+
+  return (
+    <motion.div 
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+      }}
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateX, rotateY }}
+      className={`tier-card ${isHero ? 'hero-tier' : ''}`}
+    >
+      <motion.div 
+        style={{ 
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+          background: bgGradient,
+          pointerEvents: 'none', zIndex: 1
+        }} 
+      />
+      
+      {isHero && <div className="tier-badge">Most popular</div>}
+      <div className="tier-level">{level}</div>
+      <div className="tier-name">{name}</div>
+      <div className="tier-range">{range}</div>
+      <div className="tier-days">{days} &middot; {fee}</div>
+      
+      <div className="tier-features">
+        {features.map((feat, i) => (
+          <div className="tier-feature" key={i}>
+            <i className={`ti ${isLocked ? 'ti-lock' : 'ti-check'}`}></i>
+            <span>{feat}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="tier-gamify">
+        <div className="tg-label">
+          <span>Trust Score Required</span>
+          <span>{scoreCurrent}/{scoreReq}</span>
+        </div>
+        <div className="tg-bar-bg">
+          <motion.div 
+            className="tg-bar-fill" 
+            initial={{ width: 0 }}
+            whileInView={{ width: `${progress}%` }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+          />
+        </div>
+        <button className="btn-tier" disabled={isLocked} style={{ opacity: isLocked ? 0.7 : 1 }}>
+          {isLocked ? `Needs ${scoreReq - scoreCurrent} more score` : (isHero ? 'Unlock Tier' : 'Current Tier')}
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function LandingPage() {
   const router = useRouter();
 
@@ -782,39 +888,55 @@ export default function LandingPage() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          <motion.div className="tier-card" variants={fadeUp}>
-            <div className="tier-level">Tier 0</div>
-            <div className="tier-name">First loan</div>
-            <div className="tier-range">₦5k – ₦15k</div>
-            <div className="tier-days">7-day term</div>
-            <div className="tier-divider"></div>
-            <div className="tier-fee">5% flat fee &middot; Pay once, done</div>
-          </motion.div>
-          <motion.div className="tier-card" variants={fadeUp}>
-            <div className="tier-level">Tier 1</div>
-            <div className="tier-name">Building trust</div>
-            <div className="tier-range">₦15k – ₦50k</div>
-            <div className="tier-days">14-day term</div>
-            <div className="tier-divider"></div>
-            <div className="tier-fee">6% flat fee &middot; After 1 good cycle</div>
-          </motion.div>
-          <motion.div className="tier-card hero-tier" variants={fadeUp}>
-            <div className="tier-badge">Most popular</div>
-            <div className="tier-level">Tier 2</div>
-            <div className="tier-name">Established trader</div>
-            <div className="tier-range">₦50k – ₦150k</div>
-            <div className="tier-days">21-day term</div>
-            <div className="tier-divider"></div>
-            <div className="tier-fee">7% flat fee &middot; After a few cycles</div>
-          </motion.div>
-          <motion.div className="tier-card" variants={fadeUp}>
-            <div className="tier-level">Tier 3–6</div>
-            <div className="tier-name">Trusted veteran</div>
-            <div className="tier-range">Up to ₦25M</div>
-            <div className="tier-days">Flexible terms</div>
-            <div className="tier-divider"></div>
-            <div className="tier-fee">Drops to ~4% at scale</div>
-          </motion.div>
+          <TierCard 
+            level="Tier 1"
+            name="Getting Started"
+            range="₦5k – ₦50k"
+            days="7-14 day terms"
+            fee="5-6% flat fee"
+            features={[
+              "Instant disbursement",
+              "Basic profile verification",
+              "Access to merchant tools",
+              "Standard customer support"
+            ]}
+            scoreReq={300}
+            scoreCurrent={450}
+            isLocked={false}
+          />
+          <TierCard 
+            level="Tier 2"
+            name="Established Trader"
+            range="₦50k – ₦150k"
+            days="21-day terms"
+            fee="7% flat fee"
+            features={[
+              "Higher limits available instantly",
+              "Discounted transaction fees",
+              "Priority settlement",
+              "Dedicated account manager"
+            ]}
+            isHero={true}
+            scoreReq={700}
+            scoreCurrent={450}
+            isLocked={true}
+          />
+          <TierCard 
+            level="Tier 3+"
+            name="Trusted Veteran"
+            range="Up to ₦25M"
+            days="Flexible terms"
+            fee="Rates drop to ~4%"
+            features={[
+              "Maximum capital limits",
+              "Customized loan periods",
+              "Zero-fee transfers",
+              "Association board benefits"
+            ]}
+            scoreReq={900}
+            scoreCurrent={450}
+            isLocked={true}
+          />
         </motion.div>
       </section>
 
