@@ -215,10 +215,7 @@ export default function LandingPage() {
           initial="hidden"
           animate="visible"
         >
-          <motion.div className="hero-eyebrow" variants={fadeLeft}>
-            <i className="ti ti-shield-check" aria-hidden="true"></i>
-            Powered by Squad · FCCPC DEON 2025 compliant
-          </motion.div>
+
           <motion.h1 variants={fadeUp}>
             Working capital<br />for <em>market traders,</em><br />built on trust.
           </motion.h1>
@@ -604,20 +601,114 @@ export default function LandingPage() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          <motion.div className="how-card" variants={fadeUp}>
-            <div className="how-num">1</div>
-            <div className="how-title">Get your Squad account</div>
-            <div className="how-body">Open a free account through your market association or the app. Customers pay into your Squad virtual account. Every naira that flows through it builds your profile — automatically.</div>
+          <div className="how-path-bg">
+            <svg viewBox="0 0 1000 300" preserveAspectRatio="none">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                  <path d="M 2 2 L 8 5 L 2 8" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </marker>
+              </defs>
+              {/* S-curve from Step 1 to Step 2 */}
+              <path d="M 250,180 C 320,280 380,80 450,100" fill="none" stroke="var(--brand)" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" marker-end="url(#arrow)" />
+              {/* S-curve from Step 2 to Step 3 */}
+              <path d="M 550,100 C 620,120 680,280 750,180" fill="none" stroke="var(--brand)" strokeWidth="2" strokeDasharray="6 6" opacity="0.4" marker-end="url(#arrow)" />
+            </svg>
+          </div>
+          
+          <motion.div className="how-step" variants={fadeUp}>
+            <div className="how-graphic" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '240px', perspective: '1000px' }}>
+              <motion.div 
+                style={{ background: 'white', borderRadius: '20px', padding: '24px', width: '220px', boxShadow: '0 20px 40px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.05)', transformStyle: 'preserve-3d' }}
+                animate={{ rotateY: [-5, 5, -5], rotateX: [5, -5, 5] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                  <motion.div 
+                    style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--brand-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand)', fontSize: '20px' }}
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <i className="ti ti-building-store"></i>
+                  </motion.div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ height: '8px', background: 'var(--sand-dark)', borderRadius: '4px', marginBottom: '8px', width: '80%' }}></div>
+                    <div style={{ height: '6px', background: 'var(--sand-dark)', borderRadius: '3px', width: '50%' }}></div>
+                  </div>
+                </div>
+                <div style={{ background: 'var(--sand)', padding: '16px', borderRadius: '12px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--ink-soft)', marginBottom: '4px', fontWeight: 600 }}>SQUAD ACCOUNT</div>
+                  <motion.div 
+                    style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--ink)', letterSpacing: '1px' }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 1, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, times: [0, 0.1, 0.9, 1] }}
+                  >
+                    812 456 7890
+                  </motion.div>
+                  <motion.div 
+                    style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--brand)' }}
+                    initial={{ scaleY: 0 }}
+                    animate={{ scaleY: [0, 1, 1, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, times: [0, 0.1, 0.9, 1] }}
+                  />
+                </div>
+              </motion.div>
+            </div>
+            <div className="how-text">
+              <div className="how-title">Get your Squad account</div>
+              <div className="how-body">Open a free account through your market association or the app. Customers pay into your Squad virtual account. Every naira that flows through it builds your profile — automatically.</div>
+            </div>
           </motion.div>
-          <motion.div className="how-card" variants={fadeUp}>
-            <div className="how-num">2</div>
-            <div className="how-title">Build your trust score</div>
-            <div className="how-body">Our AI reads your inflow patterns — regularity, customer spread, growth trend, and your traders' network. Within three weeks you may already qualify for your first loan.</div>
+          
+          <motion.div className="how-step offset-up" variants={fadeUp}>
+            <div className="how-graphic" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '240px' }}>
+              <div style={{ position: 'relative', width: '180px', height: '180px' }}>
+                <svg width="180" height="180" viewBox="0 0 180 180" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="90" cy="90" r="80" fill="none" stroke="var(--sand-dark)" strokeWidth="12" />
+                  <motion.circle 
+                    cx="90" cy="90" r="80" fill="none" stroke="var(--brand)" strokeWidth="12" strokeLinecap="round"
+                    strokeDasharray="502"
+                    strokeDashoffset="502"
+                    animate={{ strokeDashoffset: [502, 120, 120] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeOut", times: [0, 0.5, 1] }}
+                  />
+                </svg>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--ink-soft)', fontWeight: 700, letterSpacing: '1.5px', marginBottom: '4px' }}>TRUST SCORE</div>
+                  <motion.div 
+                    style={{ fontSize: '42px', fontFamily: '"DM Serif Display", serif', color: 'var(--ink)', lineHeight: 1 }}
+                    animate={{ scale: [0.9, 1.1, 1, 1] }}
+                    transition={{ duration: 4, repeat: Infinity, times: [0, 0.3, 0.5, 1] }}
+                  >
+                    785
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+            <div className="how-text">
+              <div className="how-title">Build your trust score</div>
+              <div className="how-body">Our AI reads your inflow patterns — regularity, customer spread, growth trend, and your traders' network. Within three weeks you may already qualify for your first loan.</div>
+            </div>
           </motion.div>
-          <motion.div className="how-card" variants={fadeUp}>
-            <div className="how-num">3</div>
-            <div className="how-title">Repay from daily sales</div>
-            <div className="how-body">A small percentage of every incoming payment is quietly redirected to repay your loan. Busy day — faster repayment. Slow day — less taken. No calls. No threats. No drama.</div>
+          
+          <motion.div className="how-step" variants={fadeUp}>
+            <div className="how-graphic">
+              <div className="hg-window">
+                 <div className="hg-topbar"></div>
+                 <div className="hg-content centered">
+                   <div className="hg-success-circle"><i className="ti ti-check"></i></div>
+                   <div className="hg-chart">
+                     <div className="hg-bar"></div><div className="hg-bar"></div><div className="hg-bar"></div>
+                   </div>
+                   <div className="hg-line" style={{ width: '40%', margin: '10px auto' }}></div>
+                   <div className="hg-blue-btn" style={{ width: '80%', margin: '10px auto' }}></div>
+                 </div>
+              </div>
+            </div>
+            <div className="how-text">
+              <div className="how-title">Repay from daily sales</div>
+              <div className="how-body">A small percentage of every incoming payment is quietly redirected to repay your loan. Busy day — faster repayment. Slow day — less taken. No calls. No threats. No drama.</div>
+            </div>
           </motion.div>
         </motion.div>
       </section>
