@@ -187,6 +187,38 @@ export async function getLedgerBalance(): Promise<number> {
   return res.data.balance;
 }
 
+export async function sendPayout(params: {
+  reference: string;
+  amountKobo: string;
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
+}): Promise<TransferResponse["data"]> {
+  let res: TransferResponse;
+  try {
+    res = await squadFetch<TransferResponse>("/payout/transfer", {
+      method: "POST",
+      body: JSON.stringify({
+        transaction_reference: params.reference,
+        amount: params.amountKobo,
+        bank_code: params.bankCode,
+        currency_id: "NGN",
+        account_number: params.accountNumber,
+        account_name: params.accountName,
+        remark: params.reference,
+      }),
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("424")) {
+      res = await requeryTransfer(params.reference);
+    } else {
+      throw err;
+    }
+  }
+  return res.data;
+}
+
 // ── Webhook verification ──────────────────────────────────────────────────────
 
 export interface SquadWebhookPayload {

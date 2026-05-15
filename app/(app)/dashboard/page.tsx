@@ -117,6 +117,8 @@ export default async function DashboardPage({
         totalInflows={Number(trader.total_inflows ?? 0)}
         creditLimit={Number(trader.credit_limit)}
         virtualAccountNumber={trader.virtual_account_number ?? ""}
+        disbursementAccountNumber={trader.disbursement_account_number ?? ""}
+        disbursementBankCode={trader.disbursement_bank_code ?? ""}
       />
 
       <ScoreCard

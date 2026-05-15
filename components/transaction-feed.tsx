@@ -82,6 +82,8 @@ function toSentenceCase(str: string): string {
 }
 
 function TransactionRow({ transaction, isLast }: { transaction: Transaction; isLast: boolean }) {
+  const isOutgoing = Number(transaction.settled_amount) < 0;
+
   const parts = transaction.sender_name.trim().split(/\s+/);
   const initials = parts
     .slice(0, 2)
@@ -92,9 +94,9 @@ function TransactionRow({ transaction, isLast }: { transaction: Transaction; isL
   const monogramColor =
     (initials.charCodeAt(0) || 0) % 2 === 0 ? "#F25C19" : "#E91E63";
 
-  const displayName = parts
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
-    .join(" ");
+  const displayName = isOutgoing
+    ? transaction.sender_name
+    : parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(" ");
 
   return (
     <li
@@ -107,24 +109,29 @@ function TransactionRow({ transaction, isLast }: { transaction: Transaction; isL
         borderBottom: isLast ? "none" : "1px solid rgba(26,24,21,0.05)",
       }}
     >
-      {/* Monogram */}
+      {/* Monogram / outgoing icon */}
       <div
         style={{
           width: "28px",
           height: "28px",
           borderRadius: "50%",
-          backgroundColor: monogramColor,
+          backgroundColor: isOutgoing ? "#f3f4f6" : monogramColor,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flexShrink: 0,
           fontSize: "10px",
           fontWeight: 700,
-          color: "#fff",
+          color: isOutgoing ? "#9ca3af" : "#fff",
           letterSpacing: "0.02em",
         }}
       >
-        {initials}
+        {isOutgoing ? (
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5" />
+            <polyline points="5 12 12 5 19 12" />
+          </svg>
+        ) : initials}
       </div>
 
       {/* Name + time */}
@@ -153,14 +160,16 @@ function TransactionRow({ transaction, isLast }: { transaction: Transaction; isL
           fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
           fontSize: "15px",
           fontWeight: 500,
-          color: "#059669",
+          color: isOutgoing ? "#dc2626" : "#059669",
           letterSpacing: "-0.02em",
           fontFeatureSettings: '"tnum"',
           flexShrink: 0,
           whiteSpace: "nowrap",
         }}
       >
-        +{formatNaira(transaction.settled_amount)}
+        {isOutgoing
+          ? `−${formatNaira(Math.abs(Number(transaction.settled_amount)))}`
+          : `+${formatNaira(transaction.settled_amount)}`}
       </p>
     </li>
   );

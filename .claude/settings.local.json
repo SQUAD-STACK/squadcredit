@@ -17,7 +17,11 @@
       "Bash(npx shadcn@latest init)",
       "Bash(npx tsc *)",
       "Bash(npm run *)",
-      "PowerShell(\"Cleared\")"
+      "PowerShell(\"Cleared\")",
+      "Bash(find \"c:\\\\Users\\\\My PC\\\\Desktop\\\\squadcredit\" -path \"*onboard*\" -name \"*action*\" -o -path \"*onboard*\" -name \"*server*\" 2>nul | head -20)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\My PC\\Desktop\\squadcredit"
     ]
   }
 }
