@@ -85,6 +85,9 @@ function TransactionRow({ transaction, isLast }: { transaction: Transaction; isL
     .join("")
     .toUpperCase();
 
+  const monogramColor =
+    (initials.charCodeAt(0) || 0) % 2 === 0 ? "#F25C19" : "#E91E63";
+
   const displayName = parts
     .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
     .join(" ");
@@ -106,7 +109,7 @@ function TransactionRow({ transaction, isLast }: { transaction: Transaction; isL
           width: "28px",
           height: "28px",
           borderRadius: "50%",
-          backgroundColor: "#f25c19",
+          backgroundColor: monogramColor,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

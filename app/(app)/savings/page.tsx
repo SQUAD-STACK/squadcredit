@@ -74,7 +74,7 @@ export default async function SavingsPage() {
               width: "52px",
               height: "52px",
               borderRadius: "16px",
-              backgroundColor: "#f3f4f6",
+              backgroundColor: "rgba(233,30,99,0.08)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -83,10 +83,9 @@ export default async function SavingsPage() {
           >
             <span
               style={{
-    
                 fontSize: "20px",
                 fontWeight: 700,
-                color: "#111827",
+                color: "#E91E63",
               }}
             >
               {rulePct}%
