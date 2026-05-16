@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   const principalAmount = parseFloat(payload.principal_amount);
 
   // ── Write the transaction first (idempotent on reference) ──
-  const { error: txError } = await db.from("transactions").upsert(
+  const { error: txError, count: txCount } = await db.from("transactions").upsert(
     {
       trader_id: trader.id,
       transaction_reference: payload.transaction_reference,
@@ -82,12 +82,18 @@ export async function POST(req: NextRequest) {
       transaction_date: payload.transaction_date,
       raw_payload: payload,
     },
-    { onConflict: "transaction_reference", ignoreDuplicates: true },
+    { onConflict: "transaction_reference", ignoreDuplicates: true, count: "exact" },
   );
 
   if (txError) {
     console.error("[webhook] transaction upsert failed:", txError);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
+  }
+
+  // Duplicate webhook — Squad retries for 48 h. Skip all balance mutations.
+  if (txCount === 0) {
+    console.log(`[webhook] duplicate ${payload.transaction_reference} — skipping`);
+    return ok(payload.transaction_reference);
   }
 
   // ── Fetch related rows in parallel ──

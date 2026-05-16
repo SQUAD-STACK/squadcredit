@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { animate } from "framer-motion";
 import { formatNaira } from "@/lib/format";
+import { withdrawBalance } from "@/app/(app)/_actions/withdrawBalance";
+import { getBank } from "@/lib/banks";
 
 interface DashboardCarouselProps {
   firstName: string;
@@ -11,6 +13,8 @@ interface DashboardCarouselProps {
   totalInflows: number;
   creditLimit: number;
   virtualAccountNumber: string;
+  disbursementAccountNumber: string;
+  disbursementBankCode: string;
 }
 
 function greeting(): string {
@@ -330,13 +334,18 @@ function AnimatedAmount({ value }: { value: number }) {
 
 /* ── Main carousel ── */
 
+type WithdrawState = "idle" | "confirming" | "sending" | "success" | "error";
+
 export default function DashboardCarousel({
   firstName,
   walletBalance,
   totalInflows,
   creditLimit,
   virtualAccountNumber,
+  disbursementAccountNumber,
+  disbursementBankCode,
 }: DashboardCarouselProps) {
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
@@ -344,6 +353,15 @@ export default function DashboardCarousel({
   });
   const [selectedSnap, setSelectedSnap] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [withdrawState, setWithdrawState] = useState<WithdrawState>("idle");
+  const [withdrawError, setWithdrawError] = useState<string | null>(null);
+  const [withdrawInput, setWithdrawInput] = useState("");
+  const [, startTransition] = useTransition();
+
+  const bankName = getBank(disbursementBankCode)?.name ?? "your bank";
+  const maskedAccount = disbursementAccountNumber
+    ? `****${disbursementAccountNumber.slice(-4)}`
+    : "—";
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -361,6 +379,37 @@ export default function DashboardCarousel({
     navigator.clipboard.writeText(virtualAccountNumber);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const parsedWithdrawAmount = Number(withdrawInput.replace(/,/g, "")) || 0;
+  const withdrawAmountValid = parsedWithdrawAmount >= 100 && parsedWithdrawAmount <= walletBalance;
+
+  const handleWithdrawOpen = () => {
+    setWithdrawInput(walletBalance.toLocaleString("en-NG"));
+    setWithdrawError(null);
+    setWithdrawState("confirming");
+  };
+
+  const handleWithdrawConfirm = () => {
+    if (!withdrawAmountValid) return;
+    setWithdrawState("sending");
+    setWithdrawError(null);
+    startTransition(async () => {
+      const res = await withdrawBalance(parsedWithdrawAmount);
+      if ("success" in res && res.success) {
+        setWithdrawState("success");
+        setTimeout(() => {
+          setWithdrawState("idle");
+        }, 2200);
+      } else if ("error" in res) {
+        if (res.error === "NEED_BANK_DETAILS") {
+          setWithdrawError("Add a bank account in the Borrow section first, then come back to withdraw.");
+        } else {
+          setWithdrawError(res.error);
+        }
+        setWithdrawState("error");
+      }
+    });
   };
 
   return (
@@ -417,20 +466,24 @@ export default function DashboardCarousel({
       {/* Quick action row */}
       <div style={{ display: "flex", gap: "12px", marginTop: "14px" }}>
         <button
-          onClick={() => {}}
+          onClick={() => {
+            if (walletBalance < 100) return;
+            handleWithdrawOpen();
+          }}
+          disabled={walletBalance < 100}
           style={{
             flex: 1,
             height: "44px",
             borderRadius: "99px",
             backgroundColor: "#fff",
-            border: "1.5px solid #f25c19",
-            color: "#f25c19",
+            border: `1.5px solid ${walletBalance >= 100 ? "#f25c19" : "#e5e7eb"}`,
+            color: walletBalance >= 100 ? "#f25c19" : "#9ca3af",
             fontSize: "14px",
             fontWeight: 600,
             fontFamily: "inherit",
-            cursor: "pointer",
+            cursor: walletBalance >= 100 ? "pointer" : "not-allowed",
             letterSpacing: "-0.01em",
-            transition: "background-color 0.15s ease",
+            transition: "all 0.15s ease",
           }}
         >
           Withdraw
@@ -455,6 +508,179 @@ export default function DashboardCarousel({
           {copied ? "Copied!" : "Share number"}
         </button>
       </div>
+
+      {/* Withdraw confirmation sheet */}
+      {withdrawState !== "idle" && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => {
+              if (withdrawState === "sending") return;
+              setWithdrawState("idle");
+            }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 60,
+              backgroundColor: "rgba(0,0,0,0.4)",
+            }}
+          />
+
+          {/* Sheet */}
+          <div
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 61,
+              backgroundColor: "#fff",
+              borderRadius: "24px 24px 0 0",
+              padding: "28px 24px 40px",
+            }}
+          >
+            {/* Handle */}
+            <div style={{ width: "36px", height: "4px", borderRadius: "99px", backgroundColor: "rgba(26,24,21,0.12)", margin: "0 auto 28px" }} />
+
+            {withdrawState === "success" ? (
+              <div style={{ textAlign: "center", paddingBottom: "8px" }}>
+                <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "rgba(5,150,105,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <p style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.02em", marginBottom: "6px" }}>
+                  {formatNaira(parsedWithdrawAmount)} sent
+                </p>
+                <p style={{ fontSize: "14px", color: "#9ca3af" }}>
+                  On its way to {maskedAccount}
+                </p>
+              </div>
+            ) : (
+              <>
+                <p style={{ fontSize: "11px", fontWeight: 600, color: "#9ca3af", letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: "20px" }}>
+                  Withdraw funds
+                </p>
+
+                {/* Amount input */}
+                <div
+                  style={{
+                    backgroundColor: "#fafafa",
+                    borderRadius: "16px",
+                    padding: "20px",
+                    marginBottom: "14px",
+                    border: `1.5px solid ${withdrawAmountValid || !withdrawInput ? "transparent" : "rgba(220,38,38,0.3)"}`,
+                  }}
+                >
+                  <p style={{ fontSize: "12px", color: "#9ca3af", marginBottom: "8px" }}>Amount</p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+                    <span style={{ fontSize: "24px", fontWeight: 700, color: withdrawInput ? "#111827" : "#d1d5db" }}>₦</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={withdrawInput}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "");
+                        setWithdrawInput(digits ? Number(digits).toLocaleString("en-NG") : "");
+                        setWithdrawError(null);
+                      }}
+                      disabled={withdrawState === "sending"}
+                      placeholder="0"
+                      style={{
+                        fontSize: "32px",
+                        fontWeight: 700,
+                        color: "#111827",
+                        backgroundColor: "transparent",
+                        border: "none",
+                        outline: "none",
+                        padding: 0,
+                        letterSpacing: "-0.03em",
+                        fontFeatureSettings: '"tnum"',
+                        width: "100%",
+                        caretColor: "#f25c19",
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
+                    <span style={{ fontSize: "12px", color: "#9ca3af" }}>
+                      Available: {formatNaira(walletBalance)}
+                    </span>
+                    <button
+                      onClick={() => setWithdrawInput(walletBalance.toLocaleString("en-NG"))}
+                      style={{ fontSize: "12px", fontWeight: 600, color: "#f25c19", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}
+                    >
+                      Max
+                    </button>
+                  </div>
+                </div>
+
+                {/* Destination */}
+                <div style={{ backgroundColor: "#fafafa", borderRadius: "16px", padding: "16px 20px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "13px", color: "#9ca3af" }}>To</span>
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{ fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)", fontSize: "14px", fontWeight: 500, color: "#111827", letterSpacing: "0.04em" }}>
+                      {maskedAccount}
+                    </p>
+                    <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px" }}>{bankName}</p>
+                  </div>
+                </div>
+
+                {withdrawState === "error" && withdrawError && (
+                  <p style={{ fontSize: "13px", color: "#dc2626", textAlign: "center", marginBottom: "12px" }}>
+                    {withdrawError}
+                  </p>
+                )}
+
+                <button
+                  onClick={handleWithdrawConfirm}
+                  disabled={!withdrawAmountValid || withdrawState === "sending"}
+                  style={{
+                    width: "100%",
+                    height: "54px",
+                    borderRadius: "14px",
+                    backgroundColor: withdrawAmountValid && withdrawState !== "sending" ? "#f25c19" : "#f3f4f6",
+                    color: withdrawAmountValid && withdrawState !== "sending" ? "#fff" : "#9ca3af",
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    fontFamily: "inherit",
+                    border: "none",
+                    cursor: withdrawAmountValid && withdrawState !== "sending" ? "pointer" : "not-allowed",
+                    letterSpacing: "-0.02em",
+                    marginBottom: "12px",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  {withdrawState === "sending"
+                    ? "Sending..."
+                    : withdrawAmountValid
+                    ? `Send ${formatNaira(parsedWithdrawAmount)}`
+                    : "Enter an amount"}
+                </button>
+
+                {withdrawState !== "sending" && (
+                  <button
+                    onClick={() => setWithdrawState("idle")}
+                    style={{
+                      width: "100%",
+                      height: "44px",
+                      borderRadius: "14px",
+                      backgroundColor: "transparent",
+                      color: "#6b7280",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      fontFamily: "inherit",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
